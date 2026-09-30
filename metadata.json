@@ -1,0 +1,10 @@
+{
+  "name": "SultiAI - Bisaya Language & Communication Hub",
+  "description": "An AI-powered Bisaya/Cebuano language-learning and communication platform for non-native speakers, featuring Whisper speech recognition, BERT-based NLP intent analysis, and structured conversational roleplay.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

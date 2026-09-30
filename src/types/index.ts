@@ -1,0 +1,206 @@
+export type TargetDialect = 'cebuano_standard' | 'davao_bisaya' | 'boholano';
+
+export interface DayActivity {
+  id: string;
+  date: string;
+  dayOfWeek: string;
+  dayBisaya: string;
+  dayNumber: number;
+  minutes: number;
+  goalMinutes: number;
+  goalMet: boolean;
+  xpEarned: number;
+  lessonsCompleted: number;
+  isToday?: boolean;
+}
+
+export interface ContinueLearningActivity {
+  id: string;
+  lessonId: string;
+  title: string;
+  titleBisaya?: string;
+  description?: string;
+  type: 'voice' | 'lesson' | 'flashcards' | 'roleplay';
+  categoryLabel: string;
+  level: string;
+  progressPercent: number;
+  estimatedMinutes: number;
+  xpReward: number;
+}
+
+export interface SultiRecommendation {
+  id: string;
+  title: string;
+  rationale: string;
+  targetPhrase: string;
+  targetPhraseEnglish: string;
+  contextScenario: string;
+  actionPrompt: string;
+  scenarioId?: string;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  targetDialect: TargetDialect;
+  dailyGoalMinutes: number;
+  todayMinutes: number;
+  xp: number;
+  streakDays: number;
+  level: string;
+  gems?: number;
+  hearts?: number;
+  maxHearts?: number;
+  streakFreezesAvailable?: number;
+  weeklyActivity?: DayActivity[];
+  completedLessons: string[];
+  vocabularyMastered: number;
+  speechScoreAverage: number;
+  joinedDate: string;
+}
+
+export type ActivityType = 
+  | 'flashcard' 
+  | 'multiple_choice' 
+  | 'pronunciation_drill' 
+  | 'sentence_assembly'
+  | 'dialogue_prompt';
+
+export interface Activity {
+  id: string;
+  type: ActivityType;
+  prompt: string;
+  promptBisaya?: string;
+  phonetics?: string;
+  options?: string[];
+  correctAnswer?: string | number;
+  explanation?: string;
+  audioKey?: string;
+  culturalNote?: string;
+}
+
+export interface Lesson {
+  id: string;
+  moduleId: string;
+  title: string;
+  titleBisaya: string;
+  description: string;
+  level: 'Beginner' | 'Elementary' | 'Intermediate';
+  xpReward: number;
+  estimatedMinutes: number;
+  completed?: boolean;
+  score?: number;
+  activities: Activity[];
+}
+
+export interface Module {
+  id: string;
+  title: string;
+  titleBisaya: string;
+  description: string;
+  icon: string;
+  accentColor: string;
+  lessons: Lesson[];
+}
+
+export interface BertNlpAnalysis {
+  predictedIntent: string;
+  intentConfidence: number;
+  detectedLanguage: string;
+  languageConfidence: number;
+  sentiment: 'Polite' | 'Casual' | 'Inquiring' | 'Hesitant' | 'Formal';
+  sentimentScore: number;
+  keyTokens: { token: string; weight: number }[];
+  bertModelRef: string; // "mBERT-cased-finetuned-cebuano" / "RoBERTa-Tagalog-Bisaya-Intent"
+  latencyMs: number;
+}
+
+export interface SpeechAnalysis {
+  transcription: string;
+  confidence: number;
+  accuracyScore: number;
+  whisperWer: number; // Word Error Rate
+  phonemeFeedback?: string;
+  syllableBreakdown?: string[];
+}
+
+export interface SultiMessage {
+  id: string;
+  sender: 'user' | 'sulti';
+  text: string;
+  translation?: string;
+  phoneticGuide?: string;
+  timestamp: string;
+  isAudio?: boolean;
+  bertAnalysis?: BertNlpAnalysis;
+  speechAnalysis?: SpeechAnalysis;
+  suggestedReplies?: string[];
+  culturalTip?: string;
+  vocabularyBreakdown?: { bisaya: string; english: string; pos: string }[];
+  grammarCorrection?: string;
+  groundingType?: 'search' | 'maps';
+  searchSources?: { uri: string; title: string }[];
+  mapsLinks?: { uri: string; title: string }[];
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video' | 'music';
+}
+
+export interface RoleplayScenario {
+  id: string;
+  title: string;
+  titleBisaya: string;
+  context: string;
+  location: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  initialPrompt: string;
+  suggestedGoal: string;
+  imagePromptUrl?: string;
+  usefulPhrases: { bisaya: string; english: string }[];
+}
+
+export interface CommunityComment {
+  id: string;
+  authorName: string;
+  authorRole: string;
+  text: string;
+  timestamp: string;
+  likes: number;
+}
+
+export interface CommunityPost {
+  id: string;
+  authorName: string;
+  authorAvatar: string;
+  authorTag: string;
+  category: 'Expression' | 'Grammar' | 'Cultural Tip' | 'Question' | 'Pronunciation';
+  title: string;
+  contentBisaya: string;
+  contentEnglish: string;
+  dialectNote?: string;
+  likes: number;
+  likedByMe: boolean;
+  comments: CommunityComment[];
+  timestamp: string;
+  isReported?: boolean;
+}
+
+export interface CapstoneRequirement {
+  id: number;
+  title: string;
+  status: 'verified' | 'in_progress' | 'ready_for_defense';
+  description: string;
+  evidence: string;
+  verifiedTimestamp: string;
+}
+
+export interface ResearchMetricData {
+  preTestAverage: number;
+  postTestAverage: number;
+  improvementPercentage: number;
+  susScore: number; // System Usability Scale (0-100)
+  whisperAvgWer: number; // Whisper Word Error Rate %
+  bertIntentAccuracy: number; // %
+  sampleSize: number;
+}

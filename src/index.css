@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+  h1, h2, h3, .font-display {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+/* 3D Duolingo / Speak Style Tactile Buttons */
+.btn-3d-teal {
+  box-shadow: 0 4px 0 #0f766e;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-3d-teal:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0f766e;
+}
+
+.btn-3d-emerald {
+  box-shadow: 0 4px 0 #047857;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-3d-emerald:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #047857;
+}
+
+.btn-3d-rose {
+  box-shadow: 0 4px 0 #be123c;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-3d-rose:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #be123c;
+}
+
+.btn-3d-amber {
+  box-shadow: 0 4px 0 #b45309;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-3d-amber:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #b45309;
+}
+
+.btn-3d-sky {
+  box-shadow: 0 4px 0 #0284c7;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-3d-sky:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0284c7;
+}
+
+.btn-3d-white {
+  box-shadow: 0 3px 0 #cbd5e1;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-3d-white:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #cbd5e1;
+}
+
+.btn-3d-dark {
+  box-shadow: 0 4px 0 #1c1917;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-3d-dark:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #1c1917;
+}
+
+/* Pulsing radar ring for active lesson node */
+@keyframes radar-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 12px rgba(20, 184, 166, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0);
+  }
+}
+
+.animate-radar {
+  animation: radar-pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes heart-beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+.animate-heart {
+  animation: heart-beat 1.2s infinite ease-in-out;
+}
+
+/* Audio Waveform animation */
+@keyframes soundwave {
+  0%, 100% { height: 6px; }
+  50% { height: 28px; }
+}
+
+.wave-bar-1 { animation: soundwave 0.8s ease-in-out infinite 0.1s; }
+.wave-bar-2 { animation: soundwave 0.8s ease-in-out infinite 0.25s; }
+.wave-bar-3 { animation: soundwave 0.8s ease-in-out infinite 0.4s; }
+.wave-bar-4 { animation: soundwave 0.8s ease-in-out infinite 0.15s; }
+.wave-bar-5 { animation: soundwave 0.8s ease-in-out infinite 0.35s; }
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55);
+}
