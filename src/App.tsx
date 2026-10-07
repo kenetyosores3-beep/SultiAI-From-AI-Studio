@@ -11,6 +11,7 @@ import { CapstoneAuditModal } from './components/CapstoneAuditModal';
 import { DialectModal } from './components/DialectModal';
 import { UserProfile, Lesson, TargetDialect, Module, DayActivity } from './types';
 import { INITIAL_MODULES, DEFAULT_WEEKLY_ACTIVITY } from './data/curriculumData';
+import { ThemeProvider } from './context/ThemeContext';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
@@ -18,6 +19,7 @@ export default function App() {
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [showAuditModal, setShowAuditModal] = useState(false);
   const [showDialectModal, setShowDialectModal] = useState(false);
+  const [sultiPrefillPrompt, setSultiPrefillPrompt] = useState<string | undefined>();
 
   // Persistent User Profile State
   const [profile, setProfile] = useState<UserProfile>(() => {
@@ -149,6 +151,32 @@ export default function App() {
     });
   };
 
+  // Add practice minutes from drills or quick actions
+  const handleAddPracticeMinutes = (addedMinutes: number) => {
+    setProfile((prev) => {
+      const newTodayMins = prev.todayMinutes + addedMinutes;
+      const updatedWeekly = (prev.weeklyActivity || DEFAULT_WEEKLY_ACTIVITY).map((d) => {
+        if (d.isToday) {
+          const m = d.minutes + addedMinutes;
+          return {
+            ...d,
+            minutes: m,
+            xpEarned: d.xpEarned + addedMinutes * 5,
+            goalMet: m >= d.goalMinutes,
+          };
+        }
+        return d;
+      });
+
+      return {
+        ...prev,
+        xp: prev.xp + addedMinutes * 5,
+        todayMinutes: newTodayMins,
+        weeklyActivity: updatedWeekly,
+      };
+    });
+  };
+
   // Update Dialect
   const handleUpdateDialect = (newDialect: TargetDialect) => {
     setProfile((prev) => ({
@@ -166,18 +194,21 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col justify-between selection:bg-teal-500 selection:text-white">
-      {/* Top Mobile App Bar */}
-      <TopHeader
-        streak={profile.streakDays}
-        xp={profile.xp}
-        gems={profile.gems}
-        hearts={profile.hearts}
-        dialect={profile.targetDialect}
-        onOpenDialectModal={() => setShowDialectModal(true)}
-        onOpenAuditModal={() => setShowAuditModal(true)}
-        onRefillHearts={handleRefillHearts}
-      />
+    <ThemeProvider>
+      <div className="min-h-screen bg-[#F7F7F5] dark:bg-[#0A121D] text-stone-900 dark:text-stone-100 flex flex-col justify-between selection:bg-teal-500 selection:text-white transition-colors duration-200">
+        {/* Top Mobile App Bar */}
+        <TopHeader
+          streak={profile.streakDays}
+          xp={profile.xp}
+          gems={profile.gems}
+          hearts={profile.hearts}
+          dialect={profile.targetDialect}
+          onOpenDialectModal={() => setShowDialectModal(true)}
+          onOpenAuditModal={() => setShowAuditModal(true)}
+          onRefillHearts={handleRefillHearts}
+          userName={profile.name}
+          showHeroGreeting={currentTab === 'home'}
+        />
 
       {/* Main Viewport Content */}
       <main className="flex-1 w-full max-w-md mx-auto">
@@ -187,10 +218,14 @@ export default function App() {
             weeklyActivity={profile.weeklyActivity || DEFAULT_WEEKLY_ACTIVITY}
             nextLesson={nextLesson}
             onStartLesson={handleStartLesson}
-            onOpenSulti={() => setCurrentTab('sulti')}
+            onOpenSulti={(prompt?: string) => {
+              setSultiPrefillPrompt(prompt);
+              setCurrentTab('sulti');
+            }}
             onGoToLearn={() => setCurrentTab('learn')}
             onGoToProfile={() => setCurrentTab('profile')}
             onUseStreakFreeze={handleUseStreakFreeze}
+            onOpenDialectModal={() => setShowDialectModal(true)}
           />
         )}
 
@@ -199,6 +234,12 @@ export default function App() {
             modules={modules}
             completedLessons={profile.completedLessons}
             onStartLesson={handleStartLesson}
+            profile={profile}
+            onAddPracticeMinutes={handleAddPracticeMinutes}
+            onOpenSulti={(prompt?: string) => {
+              setSultiPrefillPrompt(prompt);
+              setCurrentTab('sulti');
+            }}
           />
         )}
 
@@ -206,6 +247,7 @@ export default function App() {
           <SultiScreen
             targetDialect={profile.targetDialect}
             onActivityPerformed={handleSultiActivity}
+            initialPrompt={sultiPrefillPrompt}
           />
         )}
 
@@ -250,5 +292,6 @@ export default function App() {
         />
       )}
     </div>
+  </ThemeProvider>
   );
 }

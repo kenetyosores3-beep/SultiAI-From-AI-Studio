@@ -39,22 +39,22 @@ export const DialectModal: React.FC<DialectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl p-5 max-w-sm w-full space-y-4 shadow-2xl border border-stone-200">
-        <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+      <div className="bg-white dark:bg-[#11222D] rounded-3xl p-5 max-w-sm w-full space-y-4 shadow-2xl border border-stone-200 dark:border-white/10 transition-colors">
+        <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/10 pb-2">
           <div className="flex items-center gap-2">
-            <Globe className="w-5 h-5 text-teal-600" />
+            <Globe className="w-5 h-5 text-teal-600 dark:text-teal-400" />
             <div>
-              <h3 className="font-display font-bold text-sm text-stone-900">
+              <h3 className="font-display font-bold text-sm text-stone-900 dark:text-white">
                 Select Target Bisaya Variety
               </h3>
-              <p className="text-[11px] text-stone-500">
+              <p className="text-[11px] text-stone-500 dark:text-stone-400">
                 Tailors SULTI AI vocabulary & phrases
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-stone-400 hover:text-stone-700 p-1"
+            className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -71,21 +71,21 @@ export const DialectModal: React.FC<DialectModalProps> = ({
                   onSelect(d.id);
                   onClose();
                 }}
-                className={`w-full p-3.5 rounded-2xl border text-left transition-all ${
+                className={`w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer glass-touch ${
                   isSelected
-                    ? 'bg-teal-50 border-teal-500 text-teal-950 shadow-sm'
-                    : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
+                    ? 'bg-teal-50 dark:bg-teal-950/70 border-teal-500 text-teal-950 dark:text-teal-200 shadow-sm ring-2 ring-teal-500/30'
+                    : 'bg-stone-50 dark:bg-stone-800/60 border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700/60'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-stone-900">{d.name}</span>
-                  {isSelected && <Check className="w-4 h-4 text-teal-600" />}
+                  <span className="font-bold text-xs text-stone-900 dark:text-white">{d.name}</span>
+                  {isSelected && <Check className="w-4 h-4 text-teal-600 dark:text-teal-400" />}
                 </div>
-                <div className="text-[10px] text-teal-700 font-semibold">{d.region}</div>
-                <p className="text-[11px] text-stone-600 mt-1 leading-normal">
+                <div className="text-[10px] text-teal-700 dark:text-teal-300 font-semibold">{d.region}</div>
+                <p className="text-[11px] text-stone-600 dark:text-stone-400 mt-1 leading-normal">
                   {d.description}
                 </p>
-                <div className="text-[10px] font-mono text-stone-500 mt-1 italic">
+                <div className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1 italic">
                   "{d.sample}"
                 </div>
               </button>

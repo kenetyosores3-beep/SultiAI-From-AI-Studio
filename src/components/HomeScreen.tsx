@@ -24,6 +24,7 @@ interface HomeScreenProps {
   onGoToLearn: () => void;
   onGoToProfile?: () => void;
   onUseStreakFreeze?: () => void;
+  onOpenDialectModal?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -35,6 +36,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onGoToLearn,
   onGoToProfile,
   onUseStreakFreeze,
+  onOpenDialectModal,
 }) => {
   const [isPlayingExpression, setIsPlayingExpression] = useState(false);
   const [showRewardToast, setShowRewardToast] = useState<string | null>(null);
@@ -91,7 +93,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-24 px-4 pt-3 max-w-md mx-auto relative select-none">
+    <div className="space-y-4 pb-24 px-4 pt-1 max-w-md mx-auto relative select-none">
       {/* Toast Notification */}
       {showRewardToast && (
         <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 border border-emerald-400 animate-bounce">
@@ -99,29 +101,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <span>{showRewardToast}</span>
         </div>
       )}
-
-      {/* ZONE 1: PERSONALIZED GREETING & CONTEXT */}
-      <div className="space-y-1 pt-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-            <span>Target Dialect:</span>
-            <span className="font-bold text-stone-800">
-              {profile.targetDialect === 'davao_bisaya' ? 'Davao Bisaya' : 'Standard Cebuano'}
-            </span>
-          </div>
-          <span className="font-mono text-[10px] text-teal-800 font-bold bg-teal-50 border border-teal-200/70 px-2 py-0.5 rounded-full">
-            {profile.level.split(':')[0]}
-          </span>
-        </div>
-
-        <h1 className="font-display font-black text-2xl text-stone-900 tracking-tight">
-          {greeting.bisaya}
-        </h1>
-        <p className="text-xs text-stone-500 font-medium">
-          Ready for your Bisaya communication practice today?
-        </p>
-      </div>
 
       {/* ZONE 2: TODAY'S MISSION (HERO COMPONENT ⭐) */}
       <DailyMissionCard
@@ -173,12 +152,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Visual Streak Calendar Modal */}
       {showStreakModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md max-h-[92vh] overflow-y-auto bg-white rounded-3xl p-5 shadow-2xl space-y-4 border border-stone-200">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-md max-h-[92vh] overflow-y-auto bg-white dark:bg-[#11222D] rounded-3xl p-5 shadow-2xl space-y-4 border border-stone-200 dark:border-white/10 transition-colors">
+            <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <Flame className="w-5 h-5 text-orange-500 fill-orange-500" />
-                <h3 className="font-display font-black text-base text-stone-900">
+                <h3 className="font-display font-black text-base text-stone-900 dark:text-white">
                   Weekly Streak & Activity Calendar
                 </h3>
               </div>
@@ -187,7 +166,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   sounds.playTap();
                   setShowStreakModal(false);
                 }}
-                className="p-1.5 rounded-full hover:bg-stone-100 text-stone-500 cursor-pointer transition-colors"
+                className="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 cursor-pointer transition-colors"
                 title="Close"
               >
                 <X className="w-5 h-5" />
@@ -211,19 +190,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       )}
 
       {/* CULTURAL EXPRESSION OF THE DAY */}
-      <div className="bg-stone-50 border border-stone-200/80 rounded-3xl p-4 space-y-2 shadow-2xs">
-        <div className="flex items-center justify-between text-xs text-stone-700 font-bold">
+      <div className="bg-stone-50 dark:bg-[#11222D] border border-stone-200/80 dark:border-white/10 rounded-3xl p-4 space-y-2 shadow-2xs transition-colors">
+        <div className="flex items-center justify-between text-xs text-stone-700 dark:text-stone-300 font-bold">
           <div className="flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-600" />
-            <span className="font-display font-black text-stone-900 text-xs">
+            <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span className="font-display font-black text-stone-900 dark:text-white text-xs">
               Bisaya Expression of the Day
             </span>
           </div>
           <button 
             onClick={handlePlayExpression}
             disabled={isPlayingExpression}
-            className={`p-1.5 rounded-xl text-stone-700 hover:bg-stone-200 min-h-[36px] min-w-[36px] flex items-center justify-center transition-all cursor-pointer ${
-              isPlayingExpression ? 'bg-amber-100 text-amber-800 animate-pulse' : 'bg-white border border-stone-200'
+            className={`p-1.5 rounded-xl text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 min-h-[36px] min-w-[36px] flex items-center justify-center transition-all cursor-pointer glass-touch ${
+              isPlayingExpression ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-200 animate-pulse' : 'bg-white dark:bg-stone-800 border border-stone-200 dark:border-white/10'
             }`}
             title="Listen to native audio"
           >
@@ -231,15 +210,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </button>
         </div>
 
-        <div className="space-y-0.5 bg-white p-3 rounded-2xl border border-stone-200/60 shadow-2xs">
-          <div className="text-xs font-black text-stone-900 font-display">
+        <div className="space-y-0.5 bg-white dark:bg-stone-800/70 p-3 rounded-2xl border border-stone-200/60 dark:border-white/10 shadow-2xs">
+          <div className="text-xs font-black text-stone-900 dark:text-white font-display">
             "Kaya ra na nimo! Ayaw kaluya."
           </div>
-          <div className="text-[11px] text-stone-500 italic">
+          <div className="text-[11px] text-stone-500 dark:text-stone-400 italic">
             "You can do it! Don't lose heart."
           </div>
-          <p className="text-[10px] text-stone-500 leading-relaxed pt-1">
-            <span className="font-bold text-stone-700">Cultural Etiquette:</span> Warm encouragement common before tests and challenges in Mindanao and Central Visayas.
+          <p className="text-[10px] text-stone-500 dark:text-stone-400 leading-relaxed pt-1">
+            <span className="font-bold text-stone-700 dark:text-stone-200">Cultural Etiquette:</span> Warm encouragement common before tests and challenges in Mindanao and Central Visayas.
           </p>
         </div>
       </div>
@@ -250,10 +229,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           sounds.playTap();
           onGoToLearn();
         }}
-        className="w-full py-3 px-4 rounded-2xl border border-stone-200/90 bg-white hover:bg-stone-50 text-stone-800 text-xs font-bold flex items-center justify-between transition-all btn-3d-white cursor-pointer shadow-2xs"
+        className="w-full py-3 px-4 rounded-2xl border border-stone-200/90 dark:border-white/10 bg-white dark:bg-[#11222D] hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-800 dark:text-white text-xs font-bold flex items-center justify-between transition-all glass-touch cursor-pointer shadow-2xs"
       >
         <div className="flex items-center gap-2">
-          <Compass className="w-4 h-4 text-teal-600" />
+          <Compass className="w-4 h-4 text-teal-600 dark:text-teal-400" />
           <span className="font-display">Browse All 4 Curriculum Units & Phrasebook</span>
         </div>
         <ChevronRight className="w-4 h-4 text-stone-400" />

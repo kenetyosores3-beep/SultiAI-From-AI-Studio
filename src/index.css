@@ -1,11 +1,40 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg-app: #F7F7F5;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #F3F4F6;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --border-subtle: #E5E7EB;
+  --accent-primary: #5B5FEF;
+  --accent-secondary: #0D9488;
+  --accent-teal: #14B8A6;
+}
+
+.dark {
+  --bg-app: #0A121D;
+  --bg-surface: #11222D;
+  --bg-surface-elevated: #152B37;
+  --text-primary: #FFFFFF;
+  --text-secondary: #8E9BAE;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --accent-primary: #5B5FEF;
+  --accent-secondary: #2563EB;
+  --accent-teal: #00B8A9;
+}
+
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
   }
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   h1, h2, h3, .font-display {
     font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -20,6 +49,84 @@
 .btn-3d-teal:active {
   transform: translateY(3px);
   box-shadow: 0 1px 0 #0f766e;
+}
+
+/* Glassmorphic Touch Animation & Surface Styles */
+.glass-touch {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.2s ease, 
+              border-color 0.2s ease, 
+              background-color 0.2s ease;
+}
+
+.glass-touch::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(20, 184, 166, 0.2) 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  border-radius: inherit;
+}
+
+.dark .glass-touch::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(20, 184, 166, 0.3) 100%);
+}
+
+.glass-touch:hover::before {
+  opacity: 0.6;
+}
+
+.glass-touch:active {
+  transform: scale(0.975);
+}
+
+.glass-touch:active::before {
+  opacity: 1;
+}
+
+/* Subtle glass reflection shimmer on touch */
+@keyframes glass-shimmer {
+  0% { transform: translateX(-150%) rotate(25deg); }
+  100% { transform: translateX(250%) rotate(25deg); }
+}
+
+.glass-shimmer-effect:active::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.25) 50%, 
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: glass-shimmer 0.6s ease-out;
+}
+
+.glass-card-surface {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+}
+
+.dark .glass-card-surface {
+  background: rgba(17, 34, 45, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .btn-3d-emerald {

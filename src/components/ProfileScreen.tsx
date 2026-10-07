@@ -3,12 +3,13 @@ import {
   User, Award, Flame, BookOpen, Mic, CheckCircle2, Shield, 
   Settings, FileText, ChevronRight, BarChart2, Gem, Heart, 
   Trophy, Sparkles, Database, Check, Copy, Volume2, ShieldCheck, 
-  Activity, ArrowUpRight
+  Activity, ArrowUpRight, Sun, Moon, Monitor
 } from 'lucide-react';
 import { UserProfile, TargetDialect } from '../types';
 import { CAPSTONE_CHECKLIST_DATA, RESEARCH_METRICS, DEFAULT_WEEKLY_ACTIVITY } from '../data/curriculumData';
 import { sounds } from '../utils/soundEffects';
 import { StreakCalendar } from './StreakCalendar';
+import { useTheme, ThemeMode } from '../context/ThemeContext';
 
 interface ProfileScreenProps {
   profile: UserProfile;
@@ -23,6 +24,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onUpdateDailyGoal,
   onOpenAuditModal,
 }) => {
+  const { themeMode, setThemeMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'stats' | 'achievements' | 'research' | 'settings'>('stats');
 
   // Interactive SUS (System Usability Scale) survey runner state
@@ -62,8 +64,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   return (
     <div className="space-y-4 pb-24 px-4 pt-3 max-w-md mx-auto">
       {/* Profile Header (Duolingo / Speak mobile profile) */}
-      <div className="bg-white rounded-3xl p-5 border border-stone-200/90 shadow-sm space-y-4 text-center relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-28 h-28 bg-teal-50 rounded-full blur-2xl -mr-6 -mt-6 pointer-events-none" />
+      <div className="bg-white dark:bg-[#11222D] rounded-3xl p-5 border border-stone-200/90 dark:border-white/10 shadow-sm space-y-4 text-center relative overflow-hidden transition-colors">
+        <div className="absolute top-0 right-0 w-28 h-28 bg-teal-50 dark:bg-teal-500/10 rounded-full blur-2xl -mr-6 -mt-6 pointer-events-none" />
 
         <div className="relative w-20 h-20 mx-auto">
           <img
@@ -72,63 +74,63 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             referrerPolicy="no-referrer"
             className="w-20 h-20 rounded-full object-cover border-4 border-teal-500 shadow-md"
           />
-          <div className="absolute -bottom-1 -right-1 bg-stone-900 text-teal-400 p-1.5 rounded-full shadow-md border-2 border-white">
+          <div className="absolute -bottom-1 -right-1 bg-stone-900 dark:bg-teal-950 text-teal-400 p-1.5 rounded-full shadow-md border-2 border-white dark:border-[#11222D]">
             <Award className="w-4 h-4" />
           </div>
         </div>
 
         <div className="space-y-1">
-          <h2 className="font-display font-black text-xl text-stone-900">
+          <h2 className="font-display font-black text-xl text-stone-900 dark:text-white">
             {profile.name}
           </h2>
-          <p className="text-xs text-stone-500 font-medium">
+          <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">
             {profile.email} · Joined {profile.joinedDate}
           </p>
-          <div className="inline-block mt-1 px-3 py-1 bg-teal-50 text-teal-800 rounded-full text-xs font-bold border border-teal-200/60">
+          <div className="inline-block mt-1 px-3 py-1 bg-teal-50 dark:bg-teal-950/70 text-teal-800 dark:text-teal-200 rounded-full text-xs font-bold border border-teal-200/60 dark:border-teal-500/30">
             {profile.level} · {profile.targetDialect === 'davao_bisaya' ? 'Davao Bisaya' : 'Standard Cebuano'}
           </div>
         </div>
 
         {/* 4 Core Summary Metrics */}
-        <div className="grid grid-cols-4 gap-2 pt-3 border-t border-stone-100 text-center">
-          <div className="p-2.5 bg-amber-50/70 rounded-2xl border border-amber-200/60">
-            <div className="text-base font-black font-mono text-amber-900 tabular-nums">
+        <div className="grid grid-cols-4 gap-2 pt-3 border-t border-stone-100 dark:border-white/10 text-center">
+          <div className="p-2.5 bg-amber-50/70 dark:bg-amber-950/40 rounded-2xl border border-amber-200/60 dark:border-amber-500/30">
+            <div className="text-base font-black font-mono text-amber-900 dark:text-amber-200 tabular-nums">
               {profile.streakDays}d
             </div>
-            <div className="text-[10px] text-amber-800 font-bold uppercase tracking-wider">Streak</div>
+            <div className="text-[10px] text-amber-800 dark:text-amber-300 font-bold uppercase tracking-wider">Streak</div>
           </div>
-          <div className="p-2.5 bg-teal-50/70 rounded-2xl border border-teal-200/60">
-            <div className="text-base font-black font-mono text-teal-900 tabular-nums">
+          <div className="p-2.5 bg-teal-50/70 dark:bg-teal-950/40 rounded-2xl border border-teal-200/60 dark:border-teal-500/30">
+            <div className="text-base font-black font-mono text-teal-900 dark:text-teal-200 tabular-nums">
               {profile.xp}
             </div>
-            <div className="text-[10px] text-teal-800 font-bold uppercase tracking-wider">Total XP</div>
+            <div className="text-[10px] text-teal-800 dark:text-teal-300 font-bold uppercase tracking-wider">Total XP</div>
           </div>
-          <div className="p-2.5 bg-sky-50/70 rounded-2xl border border-sky-200/60">
-            <div className="text-base font-black font-mono text-sky-900 tabular-nums">
+          <div className="p-2.5 bg-sky-50/70 dark:bg-sky-950/40 rounded-2xl border border-sky-200/60 dark:border-sky-500/30">
+            <div className="text-base font-black font-mono text-sky-900 dark:text-sky-200 tabular-nums">
               {profile.gems || 240}
             </div>
-            <div className="text-[10px] text-sky-800 font-bold uppercase tracking-wider">Gems</div>
+            <div className="text-[10px] text-sky-800 dark:text-sky-300 font-bold uppercase tracking-wider">Gems</div>
           </div>
-          <div className="p-2.5 bg-indigo-50/70 rounded-2xl border border-indigo-200/60">
-            <div className="text-base font-black font-mono text-indigo-900 tabular-nums">
+          <div className="p-2.5 bg-indigo-50/70 dark:bg-indigo-950/40 rounded-2xl border border-indigo-200/60 dark:border-indigo-500/30">
+            <div className="text-base font-black font-mono text-indigo-900 dark:text-indigo-200 tabular-nums">
               {profile.speechScoreAverage}%
             </div>
-            <div className="text-[10px] text-indigo-800 font-bold uppercase tracking-wider">Whisper</div>
+            <div className="text-[10px] text-indigo-800 dark:text-indigo-300 font-bold uppercase tracking-wider">Whisper</div>
           </div>
         </div>
       </div>
 
       {/* Segmented Sub-Tabs */}
-      <div className="flex items-center gap-1 p-1 bg-stone-200/80 rounded-2xl border border-stone-300/50 shadow-inner">
+      <div className="flex items-center gap-1 p-1 bg-stone-200/80 dark:bg-stone-900/80 rounded-2xl border border-stone-300/50 dark:border-white/10 shadow-inner">
         <button
           onClick={() => {
             sounds.playTap();
             setActiveTab('stats');
           }}
-          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer glass-touch ${
             activeTab === 'stats'
-              ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
-              : 'text-stone-600 hover:text-stone-900'
+              ? 'bg-white dark:bg-[#152B37] text-stone-900 dark:text-white shadow-sm border border-stone-200 dark:border-teal-500/40'
+              : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
           }`}
         >
           League & Stats
@@ -138,10 +140,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             sounds.playTap();
             setActiveTab('achievements');
           }}
-          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer glass-touch ${
             activeTab === 'achievements'
-              ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
-              : 'text-stone-600 hover:text-stone-900'
+              ? 'bg-white dark:bg-[#152B37] text-stone-900 dark:text-white shadow-sm border border-stone-200 dark:border-teal-500/40'
+              : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
           }`}
         >
           Badges
@@ -151,10 +153,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             sounds.playTap();
             setActiveTab('research');
           }}
-          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer glass-touch ${
             activeTab === 'research'
-              ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
-              : 'text-stone-600 hover:text-stone-900'
+              ? 'bg-white dark:bg-[#152B37] text-stone-900 dark:text-white shadow-sm border border-stone-200 dark:border-teal-500/40'
+              : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
           }`}
         >
           Defense Hub
@@ -164,10 +166,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             sounds.playTap();
             setActiveTab('settings');
           }}
-          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+          className={`flex-1 min-h-[40px] py-1.5 px-2 text-xs font-bold rounded-xl transition-all cursor-pointer glass-touch ${
             activeTab === 'settings'
-              ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
-              : 'text-stone-600 hover:text-stone-900'
+              ? 'bg-white dark:bg-[#152B37] text-teal-700 dark:text-teal-300 font-black shadow-sm border border-teal-200 dark:border-teal-500/40'
+              : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
           }`}
         >
           Settings
@@ -264,27 +266,27 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             {achievements.map((ach) => (
               <div
                 key={ach.id}
-                className={`p-4 rounded-3xl border space-y-2 text-center transition-all ${
+                className={`p-4 rounded-3xl border space-y-2 text-center transition-all glass-touch ${
                   ach.unlocked
-                    ? 'bg-white border-stone-200/90 shadow-sm'
-                    : 'bg-stone-50 border-stone-200/60 opacity-50'
+                    ? 'bg-white dark:bg-[#11222D] border-stone-200/90 dark:border-white/10 shadow-sm'
+                    : 'bg-stone-50 dark:bg-stone-900/40 border-stone-200/60 dark:border-white/5 opacity-50'
                 }`}
               >
                 <div className="text-3xl mx-auto">{ach.icon}</div>
                 <div className="space-y-0.5">
-                  <div className="font-display font-black text-xs text-stone-900">
+                  <div className="font-display font-black text-xs text-stone-900 dark:text-white">
                     {ach.title}
                   </div>
-                  <p className="text-[11px] text-stone-500 leading-tight">
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
                     {ach.desc}
                   </p>
                 </div>
                 {ach.unlocked ? (
-                  <span className="inline-block text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+                  <span className="inline-block text-[10px] font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/70 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-500/30">
                     Unlocked ✓
                   </span>
                 ) : (
-                  <span className="inline-block text-[10px] font-bold text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full">
+                  <span className="inline-block text-[10px] font-bold text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 rounded-full">
                     Locked
                   </span>
                 )}
@@ -298,42 +300,42 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       {activeTab === 'research' && (
         <div className="space-y-4">
           {/* Empirical Benchmarks Grid */}
-          <div className="bg-white rounded-3xl p-4 border border-stone-200/90 shadow-sm space-y-3">
-            <h3 className="font-display font-black text-sm text-stone-900 flex items-center gap-2">
-              <Activity className="w-4 h-4 text-teal-600" />
+          <div className="bg-white dark:bg-[#11222D] rounded-3xl p-4 border border-stone-200/90 dark:border-white/10 shadow-sm space-y-3 transition-colors">
+            <h3 className="font-display font-black text-sm text-stone-900 dark:text-white flex items-center gap-2">
+              <Activity className="w-4 h-4 text-teal-600 dark:text-teal-400" />
               Empirical Research Telemetry (N = {RESEARCH_METRICS.sampleSize})
             </h3>
 
             <div className="grid grid-cols-2 gap-2.5 text-center">
-              <div className="p-3 bg-teal-50 rounded-2xl border border-teal-200">
-                <div className="text-xl font-black font-mono text-teal-800">
+              <div className="p-3 bg-teal-50 dark:bg-teal-950/50 rounded-2xl border border-teal-200 dark:border-teal-500/30">
+                <div className="text-xl font-black font-mono text-teal-800 dark:text-teal-200">
                   +{RESEARCH_METRICS.improvementPercentage}%
                 </div>
-                <div className="text-[10px] text-teal-700 font-bold uppercase tracking-wider">
+                <div className="text-[10px] text-teal-700 dark:text-teal-300 font-bold uppercase tracking-wider">
                   Pre vs Post Gain
                 </div>
               </div>
-              <div className="p-3 bg-indigo-50 rounded-2xl border border-indigo-200">
-                <div className="text-xl font-black font-mono text-indigo-800">
+              <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl border border-indigo-200 dark:border-indigo-500/30">
+                <div className="text-xl font-black font-mono text-indigo-800 dark:text-indigo-200">
                   {RESEARCH_METRICS.whisperAvgWer}%
                 </div>
-                <div className="text-[10px] text-indigo-700 font-bold uppercase tracking-wider">
+                <div className="text-[10px] text-indigo-700 dark:text-indigo-300 font-bold uppercase tracking-wider">
                   Whisper ASR WER
                 </div>
               </div>
-              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200">
-                <div className="text-xl font-black font-mono text-amber-800">
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/50 rounded-2xl border border-amber-200 dark:border-amber-500/30">
+                <div className="text-xl font-black font-mono text-amber-800 dark:text-amber-200">
                   {RESEARCH_METRICS.bertIntentAccuracy}%
                 </div>
-                <div className="text-[10px] text-amber-700 font-bold uppercase tracking-wider">
+                <div className="text-[10px] text-amber-700 dark:text-amber-300 font-bold uppercase tracking-wider">
                   BERT Intent Acc.
                 </div>
               </div>
-              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200">
-                <div className="text-xl font-black font-mono text-emerald-800">
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl border border-emerald-200 dark:border-emerald-500/30">
+                <div className="text-xl font-black font-mono text-emerald-800 dark:text-emerald-200">
                   {calculatedSus} / 100
                 </div>
-                <div className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
+                <div className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold uppercase tracking-wider">
                   SUS Usability (Grade A)
                 </div>
               </div>
@@ -341,15 +343,15 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
 
           {/* Interactive SUS Instrument */}
-          <div className="bg-white rounded-3xl p-4 border border-stone-200/90 shadow-sm space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+          <div className="bg-white dark:bg-[#11222D] rounded-3xl p-4 border border-stone-200/90 dark:border-white/10 shadow-sm space-y-3 transition-colors">
+            <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/10 pb-2">
               <div>
-                <h4 className="font-display font-black text-xs text-stone-900">
+                <h4 className="font-display font-black text-xs text-stone-900 dark:text-white">
                   System Usability Scale (SUS) Calculator
                 </h4>
-                <p className="text-[10px] text-stone-500">Brooke (1996) 10-Item Usability Standard</p>
+                <p className="text-[10px] text-stone-500 dark:text-stone-400">Brooke (1996) 10-Item Usability Standard</p>
               </div>
-              <span className="font-mono text-sm font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200">
+              <span className="font-mono text-sm font-black text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-500/40">
                 {calculatedSus} Score
               </span>
             </div>
@@ -362,19 +364,19 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 '4. I think that I would need assistance to use SULTI conversation mode.',
                 '5. I found the various Bisaya lessons and roleplay scenarios well integrated.'
               ].map((q, idx) => (
-                <div key={idx} className="space-y-1.5 p-2 bg-stone-50 rounded-xl">
-                  <div className="text-[11px] font-bold text-stone-800 leading-snug">{q}</div>
-                  <div className="flex items-center justify-between text-[10px] text-stone-500 px-1 pt-1">
+                <div key={idx} className="space-y-1.5 p-2 bg-stone-50 dark:bg-stone-900/60 rounded-xl border border-stone-100 dark:border-white/5">
+                  <div className="text-[11px] font-bold text-stone-800 dark:text-stone-200 leading-snug">{q}</div>
+                  <div className="flex items-center justify-between text-[10px] text-stone-500 dark:text-stone-400 px-1 pt-1">
                     <span>Disagree (1)</span>
                     <div className="flex gap-2">
                       {[1, 2, 3, 4, 5].map((val) => (
                         <button
                           key={val}
                           onClick={() => handleUpdateSus(idx, val)}
-                          className={`w-6 h-6 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          className={`w-6 h-6 rounded-lg text-xs font-bold transition-all cursor-pointer glass-touch ${
                             susAnswers[idx] === val
-                              ? 'bg-teal-600 text-white shadow-sm'
-                              : 'bg-white text-stone-700 border border-stone-200'
+                              ? 'bg-teal-600 text-white shadow-sm ring-1 ring-teal-400'
+                              : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-white/10'
                           }`}
                         >
                           {val}
@@ -392,37 +394,209 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
       {/* TAB 4: PREFERENCES & SETTINGS */}
       {activeTab === 'settings' && (
-        <div className="bg-white rounded-3xl p-4 border border-stone-200/90 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-[#11222D] rounded-3xl p-5 border border-stone-200/90 dark:border-white/10 shadow-sm space-y-5 transition-colors">
           <div className="space-y-1">
-            <h3 className="font-display font-black text-sm text-stone-900">
-              Learning Settings
-            </h3>
-            <p className="text-xs text-stone-500">Configure target dialect and daily goal</p>
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-black text-base text-stone-900 dark:text-white flex items-center gap-2">
+                <Settings className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                Application & Learning Settings
+              </h3>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/70 border border-teal-200 dark:border-teal-500/30 px-2 py-0.5 rounded-full">
+                SultiAI Preferences
+              </span>
+            </div>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Configure dual visual themes, target regional dialect, and daily goals
+            </p>
           </div>
 
-          <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+          <div className="space-y-5">
+            {/* 1. VISUAL APPEARANCE / DUAL THEME SWITCHER WITH GLASSO-TACTILE ANIMATION */}
+            <div className="p-4 rounded-2xl bg-stone-50/80 dark:bg-stone-900/60 border border-stone-200/80 dark:border-white/10 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-xs font-black text-stone-900 dark:text-white">
+                    Visual Appearance Theme
+                  </label>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                    Dual design system: Original Light vs SultiAI Dark
+                  </p>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-800 px-2 py-0.5 rounded-md border border-stone-200 dark:border-white/10">
+                  {themeMode === 'light' ? '☀️ Light' : themeMode === 'dark' ? '🌙 Dark' : '💻 System'}
+                </span>
+              </div>
+
+              {/* 3 Interactive Theme Switcher Cards */}
+              <div className="grid grid-cols-3 gap-2.5">
+                {/* Option 1: Light Theme */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    sounds.playTap();
+                    setThemeMode('light');
+                  }}
+                  className={`p-3 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center gap-2 relative glass-touch glass-shimmer-effect ${
+                    themeMode === 'light'
+                      ? 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-400 text-amber-950 dark:text-amber-100 font-black shadow-md ring-2 ring-amber-400/50 scale-[1.02]'
+                      : 'bg-white dark:bg-stone-800/60 border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-amber-300'
+                  }`}
+                  title="Switch to Original Light Theme"
+                >
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform ${
+                    themeMode === 'light' 
+                      ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/30 scale-105' 
+                      : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+                  }`}>
+                    <Sun className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-black block">Light</span>
+                    <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono block">Original White</span>
+                  </div>
+                  {themeMode === 'light' && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-white text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full shadow-xs flex items-center gap-0.5">
+                      <Check className="w-2.5 h-2.5" />
+                      ON
+                    </span>
+                  )}
+                </button>
+
+                {/* Option 2: SultiAI Dark Theme */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    sounds.playTap();
+                    setThemeMode('dark');
+                  }}
+                  className={`p-3 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center gap-2 relative glass-touch glass-shimmer-effect ${
+                    themeMode === 'dark'
+                      ? 'bg-teal-950/80 border-teal-400 text-teal-200 font-black shadow-md ring-2 ring-teal-400/50 scale-[1.02]'
+                      : 'bg-white dark:bg-stone-800/60 border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-teal-400'
+                  }`}
+                  title="Switch to SultiAI Dark Theme"
+                >
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform ${
+                    themeMode === 'dark' 
+                      ? 'bg-teal-500 text-stone-950 shadow-sm shadow-teal-500/30 scale-105' 
+                      : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+                  }`}>
+                    <Moon className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-black block">Dark</span>
+                    <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono block">SultiAI Navy</span>
+                  </div>
+                  {themeMode === 'dark' && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-teal-400 text-stone-950 text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full shadow-xs flex items-center gap-0.5">
+                      <Check className="w-2.5 h-2.5" />
+                      ON
+                    </span>
+                  )}
+                </button>
+
+                {/* Option 3: System Mode */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    sounds.playTap();
+                    setThemeMode('system');
+                  }}
+                  className={`p-3 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center gap-2 relative glass-touch glass-shimmer-effect ${
+                    themeMode === 'system'
+                      ? 'bg-indigo-50/90 dark:bg-indigo-950/70 border-indigo-400 text-indigo-950 dark:text-indigo-200 font-black shadow-md ring-2 ring-indigo-400/50 scale-[1.02]'
+                      : 'bg-white dark:bg-stone-800/60 border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300 hover:border-indigo-400'
+                  }`}
+                  title="Follow Operating System Theme"
+                >
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform ${
+                    themeMode === 'system' 
+                      ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/30 scale-105' 
+                      : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+                  }`}>
+                    <Monitor className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-black block">System</span>
+                    <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono block">Auto Match</span>
+                  </div>
+                  {themeMode === 'system' && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-indigo-500 text-white text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full shadow-xs flex items-center gap-0.5">
+                      <Check className="w-2.5 h-2.5" />
+                      ON
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              {/* Persistence Status & Glass Interaction Demo */}
+              <div className="p-3 bg-white dark:bg-[#11222D]/90 rounded-xl border border-stone-200/70 dark:border-white/10 text-xs space-y-2">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-stone-600 dark:text-stone-300 font-medium flex items-center gap-1.5">
+                    <Database className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                    Storage Persistence:
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/70 px-2 py-0.5 rounded border border-teal-200 dark:border-teal-500/30">
+                    localStorage["sultiai_theme_preference"] = "{themeMode}"
+                  </span>
+                </div>
+
+                {/* Interactive Glass Touch Demonstration Card */}
+                <div 
+                  onClick={() => sounds.playCorrect()}
+                  className="p-2.5 rounded-xl border border-stone-200/80 dark:border-teal-500/30 bg-gradient-to-r from-stone-50/90 to-teal-50/40 dark:from-stone-900/80 dark:to-teal-950/50 flex items-center justify-between cursor-pointer glass-touch glass-shimmer-effect"
+                  title="Touch to test glass reflection animation"
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400 animate-spin" />
+                    <div>
+                      <div className="text-[11px] font-black text-stone-900 dark:text-white">
+                        Glass Touch Effect Demo
+                      </div>
+                      <div className="text-[10px] text-stone-500 dark:text-stone-400">
+                        Tap here to feel the glassmorphic touch & sound
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold text-teal-700 dark:text-teal-300 bg-teal-100 dark:bg-teal-900/60 px-2 py-1 rounded-lg border border-teal-200 dark:border-teal-500/40">
+                    Touch Me ✨
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. TARGET REGIONAL DIALECT */}
+            <div className="p-4 rounded-2xl bg-stone-50/80 dark:bg-stone-900/60 border border-stone-200/80 dark:border-white/10 space-y-2">
+              <label className="block text-xs font-black text-stone-900 dark:text-white">
                 Target Regional Dialect
               </label>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                Adapts Whisper speech recognition, lexical choices, and colloquial particles
+              </p>
               <select
                 value={profile.targetDialect}
                 onChange={(e) => {
                   sounds.playTap();
                   onUpdateDialect(e.target.value as TargetDialect);
                 }}
-                className="w-full bg-stone-50 border border-stone-200 text-stone-900 rounded-xl p-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-white/15 text-stone-900 dark:text-white rounded-xl p-3 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-2xs cursor-pointer"
               >
-                <option value="davao_bisaya">Davao Bisaya (Urban Visayan with Mindanao loanwords)</option>
-                <option value="cebuano_standard">Cebuano Standard (Formal Central Visayas)</option>
-                <option value="boholano">Boholano (Bol-anon with 'y' to 'j' sound shifts)</option>
+                <option value="davao_bisaya">Davao Bisaya (Urban Visayan with Mindanao loanwords & particles)</option>
+                <option value="cebuano_standard">Cebuano Standard (Formal Central Visayas dialect)</option>
+                <option value="boholano">Boholano (Bol-anon variety with phonetic shifts)</option>
               </select>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
-                Daily Learning Commitment
-              </label>
+            {/* 3. DAILY LEARNING COMMITMENT */}
+            <div className="p-4 rounded-2xl bg-stone-50/80 dark:bg-stone-900/60 border border-stone-200/80 dark:border-white/10 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-black text-stone-900 dark:text-white">
+                  Daily Learning Commitment
+                </label>
+                <span className="text-[10px] font-mono font-bold text-stone-700 dark:text-stone-300">
+                  Target: {profile.dailyGoalMinutes} min/day
+                </span>
+              </div>
               <div className="grid grid-cols-3 gap-2">
                 {[10, 15, 20].map((mins) => (
                   <button
@@ -431,16 +605,33 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                       sounds.playTap();
                       onUpdateDailyGoal(mins);
                     }}
-                    className={`py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer glass-touch ${
                       profile.dailyGoalMinutes === mins
-                        ? 'bg-teal-600 text-white btn-3d-teal'
-                        : 'bg-stone-50 text-stone-700 border border-stone-200'
+                        ? 'bg-teal-600 text-white btn-3d-teal shadow-xs'
+                        : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-white/10 hover:border-teal-400'
                     }`}
                   >
                     {mins} mins / day
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* 4. DEFENSE BLUEPRINT QUICK AUDIT ACTION */}
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  sounds.playTap();
+                  onOpenAuditModal();
+                }}
+                className="w-full py-3 px-4 bg-stone-900 dark:bg-stone-800 hover:bg-stone-800 text-white rounded-2xl text-xs font-black flex items-center justify-between transition-all glass-touch cursor-pointer shadow-md border border-stone-800 dark:border-white/10"
+              >
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-teal-400" />
+                  <span>View BSIT Capstone Defense Blueprint & SQL</span>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-stone-400" />
+              </button>
             </div>
           </div>
         </div>

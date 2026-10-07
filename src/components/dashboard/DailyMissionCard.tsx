@@ -25,18 +25,18 @@ export const DailyMissionCard: React.FC<DailyMissionCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-5 border border-stone-200/90 shadow-xs space-y-4 relative overflow-hidden transition-all hover:shadow-sm">
+    <div className="bg-white dark:bg-[#11222D] rounded-3xl p-5 border border-stone-200/90 dark:border-white/10 shadow-xs space-y-4 relative overflow-hidden transition-all hover:shadow-sm">
       {/* Subtle brand tint background */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-teal-50/60 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-teal-50/60 dark:bg-teal-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
 
       {/* Header Row */}
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
-            <Target className="w-4 h-4 text-teal-600" />
+          <div className="w-8 h-8 rounded-xl bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 flex items-center justify-center font-bold border border-teal-200/60 dark:border-teal-500/30">
+            <Target className="w-4 h-4 text-teal-600 dark:text-teal-400" />
           </div>
           <div>
-            <span className="text-[10px] font-extrabold tracking-wider uppercase text-teal-700 bg-teal-50/80 px-2 py-0.5 rounded-md">
+            <span className="text-[10px] font-extrabold tracking-wider uppercase text-teal-700 dark:text-teal-300 bg-teal-50/80 dark:bg-teal-950/80 px-2 py-0.5 rounded-md border border-teal-200/50 dark:border-teal-500/30">
               Today's Mission
             </span>
           </div>
@@ -44,13 +44,13 @@ export const DailyMissionCard: React.FC<DailyMissionCardProps> = ({
 
         <div className="flex items-center gap-1.5 text-xs font-mono font-bold">
           {isGoalMet ? (
-            <span className="flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/40">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Goal Reached!
             </span>
           ) : (
-            <span className="text-stone-700 bg-stone-100 px-2.5 py-0.5 rounded-full">
-              <span className="text-teal-700 font-black">{todayMinutes}</span> / {goalMinutes} min
+            <span className="text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 px-2.5 py-0.5 rounded-full border border-stone-200 dark:border-white/10">
+              <span className="text-teal-700 dark:text-teal-400 font-black">{todayMinutes}</span> / {goalMinutes} min
             </span>
           )}
         </div>
@@ -58,12 +58,12 @@ export const DailyMissionCard: React.FC<DailyMissionCardProps> = ({
 
       {/* Mission Title & Narrative */}
       <div className="space-y-1 relative z-10">
-        <h2 className="font-display font-black text-lg text-stone-900 leading-snug">
+        <h2 className="font-display font-black text-lg text-stone-900 dark:text-white leading-snug">
           {isGoalMet
             ? "Bulahan! You hit today's practice target."
             : `Practice speaking & vocabulary for ${goalMinutes} minutes`}
         </h2>
-        <p className="text-xs text-stone-500 leading-relaxed font-normal">
+        <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed font-normal">
           {isGoalMet
             ? "Your Bisaya retention is accelerating. Continue with extra drills or conversational practice."
             : `${Math.max(0, goalMinutes - todayMinutes)} minutes remaining to maintain your ${streakDays}-day streak.`}
@@ -72,7 +72,7 @@ export const DailyMissionCard: React.FC<DailyMissionCardProps> = ({
 
       {/* Progress Bar with Bevel */}
       <div className="space-y-1.5 relative z-10">
-        <div className="w-full bg-stone-100 rounded-full h-3 p-0.5 overflow-hidden border border-stone-200/60 shadow-inner">
+        <div className="w-full bg-stone-100 dark:bg-stone-800 rounded-full h-3 p-0.5 overflow-hidden border border-stone-200/60 dark:border-white/10 shadow-inner">
           <div
             className={`h-full rounded-full transition-all duration-700 shadow-xs ${
               isGoalMet
@@ -82,16 +82,16 @@ export const DailyMissionCard: React.FC<DailyMissionCardProps> = ({
             style={{ width: `${Math.max(progressPercent, 4)}%` }}
           />
         </div>
-        <div className="flex items-center justify-between text-[11px] font-mono text-stone-500">
+        <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 dark:text-stone-400">
           <span>{todayMinutes} of {goalMinutes} mins</span>
-          <span className="font-bold text-stone-800">{progressPercent}%</span>
+          <span className="font-bold text-stone-800 dark:text-stone-200">{progressPercent}%</span>
         </div>
       </div>
 
       {/* Primary Hero CTA */}
       <button
         onClick={handleClick}
-        className="w-full min-h-[48px] bg-teal-600 hover:bg-teal-500 text-white rounded-2xl text-xs font-black py-3 px-4 flex items-center justify-center gap-2 transition-all btn-3d-teal shadow-sm cursor-pointer relative z-10"
+        className="w-full min-h-[48px] bg-teal-600 hover:bg-teal-500 dark:bg-teal-500 dark:hover:bg-teal-400 text-white dark:text-stone-950 rounded-2xl text-xs font-black py-3 px-4 flex items-center justify-center gap-2 transition-all btn-3d-teal shadow-sm cursor-pointer relative z-10"
       >
         <span>{isGoalMet ? 'Keep Practicing (Bonus XP)' : 'Continue Today\'s Mission'}</span>
         <ArrowRight className="w-4 h-4" />
