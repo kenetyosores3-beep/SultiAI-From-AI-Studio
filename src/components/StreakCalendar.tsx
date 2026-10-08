@@ -15,6 +15,7 @@ interface StreakCalendarProps {
   streakFreezes?: number;
   onQuickPractice?: () => void;
   onUseStreakFreeze?: () => void;
+  inModal?: boolean;
 }
 
 export const StreakCalendar: React.FC<StreakCalendarProps> = ({
@@ -25,6 +26,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
   streakFreezes = 1,
   onQuickPractice,
   onUseStreakFreeze,
+  inModal = false,
 }) => {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(() => {
     const today = weeklyActivity.find((d) => d.isToday);
@@ -67,71 +69,75 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
   });
 
   return (
-    <div className="bg-white dark:bg-[#11222D] rounded-3xl p-5 shadow-xs border border-stone-200/90 dark:border-white/10 space-y-4 relative overflow-hidden transition-colors">
+    <div className={`${
+      inModal 
+        ? 'space-y-3.5' 
+        : 'bg-white dark:bg-[#11222D] rounded-3xl p-4 sm:p-5 shadow-xs border border-stone-200/90 dark:border-white/10 space-y-4'
+    } relative overflow-hidden transition-colors`}>
       {/* Background ambient decorative glow */}
       <div className="absolute top-0 right-0 w-36 h-36 bg-amber-50/70 dark:bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
 
-      {/* Header with Streak Status */}
-      <div className="flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-bold shadow-md shadow-amber-500/30">
-            <Flame className="w-7 h-7 fill-white text-white animate-bounce" />
+      {/* Header with Streak Status - Responsive Flex Wrap */}
+      <div className="flex flex-col min-[380px]:flex-row items-start min-[380px]:items-center justify-between gap-2.5 relative z-10">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-bold shadow-md shadow-amber-500/30 shrink-0">
+            <Flame className="w-6 h-6 sm:w-7 sm:h-7 fill-white text-white animate-bounce" />
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h3 className="font-display font-black text-base text-stone-900 dark:text-white">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h3 className="font-display font-black text-sm sm:text-base text-stone-900 dark:text-white leading-tight">
                 {streakDays} Day Streak!
               </h3>
-              <span className="text-[10px] font-extrabold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/70 border border-amber-200/70 dark:border-amber-500/40 px-2 py-0.5 rounded-full">
+              <span className="text-[9px] sm:text-[10px] font-extrabold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/70 border border-amber-200/70 dark:border-amber-500/40 px-2 py-0.5 rounded-full shrink-0">
                 Active 🔥
               </span>
             </div>
-            <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">
-              Learning goal met on <span className="font-bold text-stone-800 dark:text-stone-200">{daysGoalMetCount} of 7 days</span> this week
+            <p className="text-[11px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium truncate mt-0.5">
+              Goal met on <span className="font-bold text-stone-800 dark:text-stone-200">{daysGoalMetCount} of 7 days</span> this week
             </p>
           </div>
         </div>
 
         {/* Streak Freeze Badge */}
-        <div className="flex items-center gap-1 text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/70 border border-sky-200/80 dark:border-sky-500/40 px-2.5 py-1 rounded-xl shadow-2xs">
-          <Shield className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 fill-sky-200 dark:fill-sky-800" />
+        <div className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/70 border border-sky-200/80 dark:border-sky-500/40 px-2.5 py-1 rounded-xl shadow-2xs shrink-0 self-start min-[380px]:self-auto">
+          <Shield className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 fill-sky-200 dark:fill-sky-800 shrink-0" />
           <span>{freezeApplied ? 'Protected' : `${streakFreezes} Freeze`}</span>
         </div>
       </div>
 
       {/* View Switcher Tabs (Week vs Month) */}
-      <div className="flex items-center justify-between border-t border-stone-100 dark:border-white/10 pt-3">
-        <div className="flex items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-xl">
+      <div className="flex flex-col min-[380px]:flex-row items-stretch min-[380px]:items-center justify-between gap-2 border-t border-stone-100 dark:border-white/10 pt-2.5">
+        <div className="flex items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-xl shrink-0">
           <button
             onClick={() => {
               sounds.playTap();
               setViewMode('week');
             }}
-            className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer glass-touch ${
+            className={`flex-1 min-[380px]:flex-none px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer text-center ${
               viewMode === 'week'
-                ? 'bg-white dark:bg-[#152B37] text-stone-900 dark:text-white shadow-2xs'
+                ? 'bg-white dark:bg-[#152B37] text-stone-900 dark:text-white shadow-2xs font-black'
                 : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
             }`}
           >
-            Weekly Activity
+            Weekly
           </button>
           <button
             onClick={() => {
               sounds.playTap();
               setViewMode('month');
             }}
-            className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer glass-touch ${
+            className={`flex-1 min-[380px]:flex-none px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer text-center ${
               viewMode === 'month'
-                ? 'bg-white dark:bg-[#152B37] text-stone-900 dark:text-white shadow-2xs'
+                ? 'bg-white dark:bg-[#152B37] text-stone-900 dark:text-white shadow-2xs font-black'
                 : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
             }`}
           >
-            30-Day View
+            30-Day
           </button>
         </div>
 
-        <div className="text-[11px] font-mono text-stone-500 dark:text-stone-400 flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+        <div className="text-[11px] font-mono text-stone-500 dark:text-stone-400 flex items-center justify-end gap-1 shrink-0">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0" />
           <span>Goal: {dailyGoalMinutes} min/day</span>
         </div>
       </div>
@@ -140,25 +146,25 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
       {viewMode === 'week' && (
         <div className="space-y-3">
           {/* Week Goal Completion Summary Bar */}
-          <div className="p-3 bg-gradient-to-r from-amber-50 to-teal-50/50 dark:from-amber-950/40 dark:to-teal-950/40 rounded-2xl border border-amber-200/60 dark:border-amber-500/30 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              <div>
-                <span className="font-bold text-stone-800 dark:text-stone-200">
+          <div className="p-2.5 sm:p-3 bg-gradient-to-r from-amber-50 to-teal-50/50 dark:from-amber-950/40 dark:to-teal-950/40 rounded-2xl border border-amber-200/60 dark:border-amber-500/30 flex items-center justify-between text-xs gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Trophy className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+              <div className="min-w-0">
+                <span className="font-bold text-stone-800 dark:text-stone-200 block truncate">
                   {daysGoalMetCount === 7 ? 'Full Week Perfect Streak!' : `${daysGoalMetCount}/7 Days Goal Achieved`}
                 </span>
-                <p className="text-[10px] text-stone-500 dark:text-stone-400 font-medium">
-                  {totalWeeklyMinutes} mins practiced · +{totalWeeklyXp} XP earned this week
+                <p className="text-[10px] text-stone-500 dark:text-stone-400 font-medium truncate">
+                  {totalWeeklyMinutes} mins practiced · +{totalWeeklyXp} XP
                 </p>
               </div>
             </div>
-            <span className="font-mono text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100/70 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-500/40 px-2 py-0.5 rounded-full">
+            <span className="font-mono text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100/70 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-500/40 px-2 py-0.5 rounded-full shrink-0">
               {Math.round((daysGoalMetCount / 7) * 100)}%
             </span>
           </div>
 
-          {/* 7 Interactive Day Nodes */}
-          <div className="grid grid-cols-7 gap-1.5 pt-1">
+          {/* 7 Interactive Day Nodes: Responsive grid that fits all screens */}
+          <div className="grid grid-cols-7 gap-1 sm:gap-1.5 pt-0.5">
             {weeklyActivity.map((day) => {
               const isSelected = selectedDayId === day.id;
               const isToday = Boolean(day.isToday);
@@ -170,9 +176,9 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
                 <button
                   key={day.id}
                   onClick={() => handleSelectDay(day)}
-                  className={`flex flex-col items-center py-2 px-1 rounded-2xl transition-all relative cursor-pointer glass-touch ${
+                  className={`flex flex-col items-center py-1.5 sm:py-2 px-0.5 sm:px-1 rounded-2xl transition-all relative cursor-pointer glass-touch min-w-0 ${
                     isSelected
-                      ? 'bg-stone-900 dark:bg-teal-500 text-white dark:text-stone-950 shadow-md scale-105 ring-2 ring-stone-900 dark:ring-teal-400 ring-offset-2 dark:ring-offset-[#11222D]'
+                      ? 'bg-stone-900 dark:bg-teal-500 text-white dark:text-stone-950 shadow-md scale-105 ring-2 ring-stone-900 dark:ring-teal-400 ring-offset-1 sm:ring-offset-2 dark:ring-offset-[#11222D]'
                       : goalMet
                       ? 'bg-amber-50/80 dark:bg-amber-950/40 hover:bg-amber-100/90 text-stone-800 dark:text-stone-200 border border-amber-300/80 dark:border-amber-500/40 shadow-2xs'
                       : isToday
@@ -180,81 +186,81 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
                       : 'bg-stone-50 dark:bg-stone-800/60 hover:bg-stone-100 dark:hover:bg-stone-700/60 text-stone-700 dark:text-stone-300 border border-stone-200/60 dark:border-white/10'
                   }`}
                 >
-                  {/* Day Label (M, T, W, T, F, S, S / Bisaya) */}
-                  <span className={`text-[10px] font-black uppercase tracking-tight ${
+                  {/* Day Label (M, T, W, T, F, S, S) */}
+                  <span className={`text-[9.5px] sm:text-[10px] font-black uppercase tracking-tight ${
                     isSelected ? 'text-stone-300 dark:text-stone-950' : 'text-stone-600 dark:text-stone-400'
                   }`}>
                     {day.dayOfWeek[0]}
                   </span>
 
                   {/* Day Number */}
-                  <span className={`text-xs font-mono font-bold my-0.5 ${
+                  <span className={`text-[11px] sm:text-xs font-mono font-bold my-0.5 ${
                     isSelected ? 'text-white dark:text-stone-950' : 'text-stone-800 dark:text-white'
                   }`}>
                     {day.dayNumber}
                   </span>
 
                   {/* Status Indicator Bubble */}
-                  <div className="relative w-8 h-8 flex items-center justify-center mt-1">
+                  <div className="relative w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center my-0.5">
                     {goalMet ? (
                       /* Radiant Flame Icon for Goal Met Day */
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform ${
+                      <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-transform ${
                         isSelected 
                           ? 'bg-gradient-to-tr from-amber-400 to-amber-300 text-stone-950 shadow-md shadow-amber-400/50 scale-110' 
                           : 'bg-gradient-to-tr from-amber-400 to-orange-400 text-white shadow-xs'
                       }`}>
-                        <Flame className="w-4 h-4 fill-current text-current" />
+                        <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current text-current" />
                       </div>
                     ) : isToday ? (
                       /* Today's In-Progress Circular Gauge */
-                      <div className="relative w-8 h-8 flex items-center justify-center">
-                        <svg className="w-8 h-8 -rotate-90">
+                      <div className="relative w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center">
+                        <svg className="w-6 h-6 sm:w-7 sm:h-7 -rotate-90">
                           <circle
-                            cx="16"
-                            cy="16"
-                            r="12"
+                            cx="14"
+                            cy="14"
+                            r="10"
                             className="stroke-stone-200 dark:stroke-stone-700 fill-none"
-                            strokeWidth="2.5"
+                            strokeWidth="2"
                           />
                           <circle
-                            cx="16"
-                            cy="16"
-                            r="12"
+                            cx="14"
+                            cy="14"
+                            r="10"
                             className="stroke-teal-500 fill-none transition-all duration-500"
-                            strokeWidth="2.5"
-                            strokeDasharray={75.4}
-                            strokeDashoffset={75.4 * (1 - progressRatio)}
+                            strokeWidth="2"
+                            strokeDasharray={62.8}
+                            strokeDashoffset={62.8 * (1 - progressRatio)}
                             strokeLinecap="round"
                           />
                         </svg>
-                        <span className="absolute text-[9px] font-mono font-black text-teal-600 dark:text-teal-400">
+                        <span className="absolute text-[8px] font-mono font-black text-teal-600 dark:text-teal-400">
                           {Math.round(progressRatio * 100)}%
                         </span>
                       </div>
                     ) : (
                       /* Missed / Rest Day */
-                      <div className="w-7 h-7 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-stone-200 dark:bg-stone-700 flex items-center justify-center">
                         <span className="w-1.5 h-1.5 rounded-full bg-stone-400 dark:bg-stone-500" />
                       </div>
                     )}
                   </div>
 
                   {/* Goal Met Check Badge or In-Progress Minutes */}
-                  <div className="mt-1">
+                  <div className="mt-0.5">
                     {goalMet ? (
-                      <span className={`text-[8px] font-mono font-bold px-1 rounded-sm ${
+                      <span className={`text-[7.5px] sm:text-[8px] font-mono font-bold px-1 rounded-sm ${
                         isSelected ? 'text-amber-300 dark:text-stone-900' : 'text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/70'
                       }`}>
                         {curMins}m
                       </span>
                     ) : isToday ? (
-                      <span className={`text-[8px] font-mono font-bold px-1 rounded-sm ${
+                      <span className={`text-[7.5px] sm:text-[8px] font-mono font-bold px-1 rounded-sm ${
                         isSelected ? 'text-teal-300 dark:text-stone-900' : 'text-teal-700 dark:text-teal-300 bg-teal-100 dark:bg-teal-950/70'
                       }`}>
                         {curMins}m
                       </span>
                     ) : (
-                      <span className="text-[8px] font-mono text-stone-400 dark:text-stone-500">
+                      <span className="text-[7.5px] sm:text-[8px] font-mono text-stone-400 dark:text-stone-500">
                         {curMins}m
                       </span>
                     )}
@@ -270,8 +276,8 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
       {viewMode === 'month' && (
         <div className="space-y-3 pt-1">
           <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-medium">
-            <span>September 2026 Consistency</span>
-            <span className="text-amber-600 dark:text-amber-400 font-bold">🔥 7-Day Current Streak</span>
+            <span>Monthly Consistency</span>
+            <span className="text-amber-600 dark:text-amber-400 font-bold">🔥 {streakDays}-Day Streak</span>
           </div>
 
           <div className="grid grid-cols-7 gap-1 text-center">
@@ -283,7 +289,7 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
             {monthDays.map((d) => (
               <div
                 key={d.dayNum}
-                className={`p-2 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center gap-0.5 border ${
+                className={`p-1.5 sm:p-2 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center gap-0.5 border ${
                   d.isCurToday
                     ? 'border-teal-500 bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 ring-2 ring-teal-500/20'
                     : d.isMet
@@ -303,63 +309,63 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
         </div>
       )}
 
-      {/* Selected Day Activity Details Drawer */}
+      {/* Selected Day Activity Details Drawer: Responsive Mobile Presentation */}
       {selectedDay && (
-        <div className="p-3.5 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200/80 dark:border-white/10 space-y-3 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-              <span className="font-bold text-stone-900 dark:text-white font-display">
-                {selectedDay.dayBisaya} ({selectedDay.dayOfWeek}), {selectedDay.date}
-                {selectedDay.isToday && ' · Karon (Today)'}
+        <div className="p-3 sm:p-3.5 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200/80 dark:border-white/10 space-y-2.5 animate-in fade-in duration-200">
+          <div className="flex flex-col min-[380px]:flex-row items-start min-[380px]:items-center justify-between gap-1.5 text-xs">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Calendar className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
+              <span className="font-bold text-stone-900 dark:text-white font-display truncate">
+                {selectedDay.dayBisaya} ({selectedDay.dayOfWeek[0]}), {selectedDay.date}
+                {selectedDay.isToday && ' · Karon'}
               </span>
             </div>
 
             {selectedDay.goalMet || (selectedDay.isToday && isTodayGoalMet) ? (
-              <span className="text-[10px] font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-500/40 flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" />
-                Learning Goal Met!
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-500/40 flex items-center gap-1 shrink-0">
+                <Check className="w-3 h-3" />
+                Goal Met!
               </span>
             ) : selectedDay.isToday ? (
-              <span className="text-[10px] font-extrabold text-amber-800 dark:text-amber-300 bg-amber-100/90 dark:bg-amber-950/80 px-2.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-500/40">
+              <span className="text-[9.5px] sm:text-[10px] font-extrabold text-amber-800 dark:text-amber-300 bg-amber-100/90 dark:bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-300 dark:border-amber-500/40 shrink-0">
                 In Progress ({todayMinutes}/{dailyGoalMinutes}m)
               </span>
             ) : (
-              <span className="text-[10px] font-bold text-stone-500 dark:text-stone-400 bg-stone-200 dark:bg-stone-800 px-2 py-0.5 rounded-full">
+              <span className="text-[9.5px] sm:text-[10px] font-bold text-stone-500 dark:text-stone-400 bg-stone-200 dark:bg-stone-800 px-2 py-0.5 rounded-full shrink-0">
                 Rest Day
               </span>
             )}
           </div>
 
           {/* Metrics Breakdown for Selected Day */}
-          <div className="grid grid-cols-3 gap-2 text-center text-xs">
-            <div className="p-2.5 bg-white dark:bg-[#11222D] rounded-xl border border-stone-200/70 dark:border-white/10 shadow-2xs">
-              <div className="text-stone-500 dark:text-stone-400 text-[10px] font-medium flex items-center justify-center gap-1">
-                <Clock className="w-3 h-3 text-teal-600 dark:text-teal-400" />
-                <span>Time Spent</span>
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center text-xs">
+            <div className="p-2 sm:p-2.5 bg-white dark:bg-[#11222D] rounded-xl border border-stone-200/70 dark:border-white/10 shadow-2xs">
+              <div className="text-stone-500 dark:text-stone-400 text-[9.5px] sm:text-[10px] font-medium flex items-center justify-center gap-1">
+                <Clock className="w-3 h-3 text-teal-600 dark:text-teal-400 shrink-0" />
+                <span className="truncate">Time</span>
               </div>
-              <div className="text-sm font-black font-mono text-stone-900 dark:text-white mt-0.5">
-                {selectedDay.isToday ? todayMinutes : selectedDay.minutes} / {selectedDay.goalMinutes} min
-              </div>
-            </div>
-
-            <div className="p-2.5 bg-white dark:bg-[#11222D] rounded-xl border border-stone-200/70 dark:border-white/10 shadow-2xs">
-              <div className="text-stone-500 dark:text-stone-400 text-[10px] font-medium flex items-center justify-center gap-1">
-                <Zap className="w-3 h-3 text-amber-500" />
-                <span>XP Earned</span>
-              </div>
-              <div className="text-sm font-black font-mono text-amber-700 dark:text-amber-400 mt-0.5">
-                +{selectedDay.isToday ? selectedDay.xpEarned + (todayMinutes > 0 ? 20 : 0) : selectedDay.xpEarned} XP
+              <div className="text-xs sm:text-sm font-black font-mono text-stone-900 dark:text-white mt-0.5 truncate">
+                {selectedDay.isToday ? todayMinutes : selectedDay.minutes}/{selectedDay.goalMinutes}m
               </div>
             </div>
 
-            <div className="p-2.5 bg-white dark:bg-[#11222D] rounded-xl border border-stone-200/70 dark:border-white/10 shadow-2xs">
-              <div className="text-stone-500 dark:text-stone-400 text-[10px] font-medium flex items-center justify-center gap-1">
-                <Award className="w-3 h-3 text-indigo-500" />
-                <span>Lessons</span>
+            <div className="p-2 sm:p-2.5 bg-white dark:bg-[#11222D] rounded-xl border border-stone-200/70 dark:border-white/10 shadow-2xs">
+              <div className="text-stone-500 dark:text-stone-400 text-[9.5px] sm:text-[10px] font-medium flex items-center justify-center gap-1">
+                <Zap className="w-3 h-3 text-amber-500 shrink-0" />
+                <span className="truncate">XP</span>
               </div>
-              <div className="text-sm font-black font-mono text-indigo-700 dark:text-indigo-400 mt-0.5">
-                {selectedDay.lessonsCompleted} Completed
+              <div className="text-xs sm:text-sm font-black font-mono text-amber-700 dark:text-amber-400 mt-0.5 truncate">
+                +{selectedDay.isToday ? selectedDay.xpEarned + (todayMinutes > 0 ? 20 : 0) : selectedDay.xpEarned}
+              </div>
+            </div>
+
+            <div className="p-2 sm:p-2.5 bg-white dark:bg-[#11222D] rounded-xl border border-stone-200/70 dark:border-white/10 shadow-2xs">
+              <div className="text-stone-500 dark:text-stone-400 text-[9.5px] sm:text-[10px] font-medium flex items-center justify-center gap-1">
+                <Award className="w-3 h-3 text-indigo-500 shrink-0" />
+                <span className="truncate">Lessons</span>
+              </div>
+              <div className="text-xs sm:text-sm font-black font-mono text-indigo-700 dark:text-indigo-400 mt-0.5 truncate">
+                {selectedDay.lessonsCompleted} done
               </div>
             </div>
           </div>
@@ -371,11 +377,13 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
                 sounds.playTap();
                 onQuickPractice();
               }}
-              className="w-full py-2.5 px-3 bg-gradient-to-r from-teal-600 to-emerald-500 hover:from-teal-500 hover:to-emerald-400 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all btn-3d-teal shadow-xs cursor-pointer glass-touch"
+              className="w-full py-2.5 px-3 bg-gradient-to-r from-teal-600 to-emerald-500 hover:from-teal-500 hover:to-emerald-400 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all btn-3d-teal shadow-xs cursor-pointer active:scale-98"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Practice {dailyGoalMinutes - todayMinutes} more mins to hit today's streak goal!</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-0.5" />
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-center leading-snug">
+                Magpraktis og {dailyGoalMinutes - todayMinutes} mins pa para sa streak!
+              </span>
+              <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
             </button>
           )}
 
@@ -383,10 +391,12 @@ export const StreakCalendar: React.FC<StreakCalendarProps> = ({
           {!selectedDay.goalMet && !selectedDay.isToday && streakFreezes > 0 && !freezeApplied && (
             <button
               onClick={handleApplyFreeze}
-              className="w-full py-2 px-3 bg-sky-50 dark:bg-sky-950/70 hover:bg-sky-100 text-sky-800 dark:text-sky-200 border border-sky-200 dark:border-sky-500/40 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer glass-touch"
+              className="w-full py-2 px-3 bg-sky-50 dark:bg-sky-950/70 hover:bg-sky-100 text-sky-800 dark:text-sky-200 border border-sky-200 dark:border-sky-500/40 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-98"
             >
-              <Shield className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-              <span>Apply Streak Freeze to protect your {streakDays}-day streak</span>
+              <Shield className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 shrink-0" />
+              <span className="text-center truncate">
+                I-apply ang Streak Freeze ({streakDays}-Day Streak)
+              </span>
             </button>
           )}
         </div>

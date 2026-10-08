@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Activity, Sliders, Users, BookOpen, 
   School, ArrowLeft, RefreshCw, ShieldCheck, Cpu, Mic, 
   Database, Server, CheckCircle2, TrendingUp, Sparkles, AlertCircle,
-  Layers, MessageSquare, Compass, Shield, Settings, LogOut, Menu, X, ChevronRight, Search
+  Layers, MessageSquare, Compass, Shield, Settings, LogOut, Menu, X, ChevronRight, Search,
+  GraduationCap
 } from 'lucide-react';
 import { useAdminAuth } from './AdminAuthContext';
 import { AdminLogin } from './AdminLogin';
@@ -17,7 +18,9 @@ import { PhrasebookManagementView } from './views/PhrasebookManagementView';
 import { ScenariosManagementView } from './views/ScenariosManagementView';
 import { CommunityModerationView } from './views/CommunityModerationView';
 import { ResearchReportsView } from './views/ResearchReportsView';
+import { TutorsManagementView } from './views/TutorsManagementView';
 import { SettingsView } from './views/SettingsView';
+import { getAllTutors } from '../../data/tutorsData';
 import { SystemStats } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -28,6 +31,7 @@ interface AdminDashboardProps {
 
 export type AdminRoute = 
   | 'dashboard'
+  | 'tutors'
   | 'users'
   | 'lessons'
   | 'modules'
@@ -78,8 +82,18 @@ export function AdminDashboard({ onSwitchToMobileApp, initialRoute = 'dashboard'
     return <AdminLogin onBackToMobileApp={onSwitchToMobileApp} />;
   }
 
+  const allTutors = getAllTutors();
+  const pendingTutorsCount = allTutors.filter(t => t.status === 'pending_review').length;
+
   const navMenuItems = [
     { id: 'dashboard' as AdminRoute, label: 'Dashboard Overview', icon: LayoutDashboard, path: '/admin' },
+    { 
+      id: 'tutors' as AdminRoute, 
+      label: 'Tutor Applications', 
+      icon: GraduationCap, 
+      badge: pendingTutorsCount > 0 ? `${pendingTutorsCount} New` : undefined, 
+      path: '/admin/tutors' 
+    },
     { id: 'users' as AdminRoute, label: 'Users & Learners', icon: Users, path: '/admin/users' },
     { id: 'lessons' as AdminRoute, label: 'Curriculum Lessons', icon: BookOpen, path: '/admin/lessons' },
     { id: 'modules' as AdminRoute, label: 'Modules Library', icon: Layers, path: '/admin/modules' },
@@ -311,6 +325,7 @@ export function AdminDashboard({ onSwitchToMobileApp, initialRoute = 'dashboard'
             </div>
           )}
 
+          {currentRoute === 'tutors' && <TutorsManagementView />}
           {currentRoute === 'users' && <LearnersManagement onLearnerAction={fetchStats} />}
           {currentRoute === 'lessons' && <LessonsManagementView />}
           {currentRoute === 'modules' && <ModulesManagementView />}

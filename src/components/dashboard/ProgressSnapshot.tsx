@@ -29,20 +29,20 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-5 border border-stone-200/90 shadow-xs space-y-3.5 transition-all hover:shadow-sm">
-      <div className="flex items-center justify-between border-b border-stone-100 pb-2.5">
+    <div className="bg-white dark:bg-[#11222D] rounded-3xl p-5 border border-stone-200/90 dark:border-white/10 shadow-xs space-y-3.5 transition-all hover:shadow-sm">
+      <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/10 pb-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+          <div className="w-7 h-7 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 border border-transparent dark:border-blue-500/20 flex items-center justify-center font-bold">
             <BarChart2 className="w-3.5 h-3.5" />
           </div>
-          <span className="font-display font-extrabold uppercase tracking-wider text-stone-900 text-xs">
+          <span className="font-display font-extrabold uppercase tracking-wider text-stone-900 dark:text-white text-xs">
             Your Progress
           </span>
         </div>
 
         <button
           onClick={handleClick}
-          className="text-xs font-bold text-teal-700 hover:text-teal-800 flex items-center gap-0.5 cursor-pointer"
+          className="text-xs font-bold text-teal-700 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 flex items-center gap-0.5 cursor-pointer"
         >
           <span>View Analytics</span>
           <ChevronRight className="w-3.5 h-3.5" />
@@ -53,15 +53,15 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
         {/* Metric 1: Speaking Accuracy (Whisper) */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-stone-600 font-medium flex items-center gap-1.5">
-              <Mic className="w-3.5 h-3.5 text-blue-600" />
+            <span className="text-stone-600 dark:text-stone-300 font-medium flex items-center gap-1.5">
+              <Mic className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               Speaking Accuracy
             </span>
-            <span className="font-mono font-bold text-stone-900">{speechAccuracy}%</span>
+            <span className="font-mono font-bold text-stone-900 dark:text-white">{speechAccuracy}%</span>
           </div>
-          <div className="w-full bg-stone-100 rounded-full h-2 p-0.5 overflow-hidden">
+          <div className="w-full bg-stone-100 dark:bg-stone-800 rounded-full h-2 p-0.5 overflow-hidden border border-stone-200/40 dark:border-white/10">
             <div
-              className="bg-blue-600 h-full rounded-full transition-all duration-700"
+              className="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700"
               style={{ width: `${speechAccuracy}%` }}
             />
           </div>
@@ -70,13 +70,13 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
         {/* Metric 2: Vocabulary Learned */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-stone-600 font-medium flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5 text-teal-600" />
+            <span className="text-stone-600 dark:text-stone-300 font-medium flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
               Vocabulary Mastered
             </span>
-            <span className="font-mono font-bold text-stone-900">{vocabularyCount} words</span>
+            <span className="font-mono font-bold text-stone-900 dark:text-white">{vocabularyCount} words</span>
           </div>
-          <div className="w-full bg-stone-100 rounded-full h-2 p-0.5 overflow-hidden">
+          <div className="w-full bg-stone-100 dark:bg-stone-800 rounded-full h-2 p-0.5 overflow-hidden border border-stone-200/40 dark:border-white/10">
             <div
               className="bg-teal-500 h-full rounded-full transition-all duration-700"
               style={{ width: `${Math.round(vocabRatio * 100)}%` }}
@@ -87,15 +87,15 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
         {/* Metric 3: Lessons Completed */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-stone-600 font-medium flex items-center gap-1.5">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+            <span className="text-stone-600 dark:text-stone-300 font-medium flex items-center gap-1.5">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               Curriculum Units
             </span>
-            <span className="font-mono font-bold text-stone-900">
+            <span className="font-mono font-bold text-stone-900 dark:text-white">
               {lessonsCompleted} / {totalLessons}
             </span>
           </div>
-          <div className="w-full bg-stone-100 rounded-full h-2 p-0.5 overflow-hidden">
+          <div className="w-full bg-stone-100 dark:bg-stone-800 rounded-full h-2 p-0.5 overflow-hidden border border-stone-200/40 dark:border-white/10">
             <div
               className="bg-emerald-500 h-full rounded-full transition-all duration-700"
               style={{ width: `${Math.round(lessonRatio * 100)}%` }}
@@ -106,13 +106,13 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
         {/* Metric 4: Total XP */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-stone-600 font-medium flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-stone-600 dark:text-stone-300 font-medium flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
               Total XP Accumulated
             </span>
-            <span className="font-mono font-bold text-stone-900">{xp} XP</span>
+            <span className="font-mono font-bold text-stone-900 dark:text-white">{xp} XP</span>
           </div>
-          <div className="w-full bg-stone-100 rounded-full h-2 p-0.5 overflow-hidden">
+          <div className="w-full bg-stone-100 dark:bg-stone-800 rounded-full h-2 p-0.5 overflow-hidden border border-stone-200/40 dark:border-white/10">
             <div
               className="bg-amber-500 h-full rounded-full transition-all duration-700"
               style={{ width: `${Math.round(xpRatio * 100)}%` }}

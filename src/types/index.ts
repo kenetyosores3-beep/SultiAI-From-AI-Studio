@@ -259,3 +259,18 @@ export interface SystemStats {
   serverUptimeSeconds: number;
   memoryUsageMb: number;
 }
+
+export type NotificationCategory = 'achievement' | 'admin' | 'security' | 'system';
+
+export interface AppNotification {
+  id: string;
+  category: NotificationCategory;
+  title: string;
+  titleBisaya?: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionLabel?: string;
+  actionType?: 'audit' | 'learn' | 'admin' | 'dialect' | 'profile';
+  iconType?: 'trophy' | 'flame' | 'shield' | 'bell' | 'sparkles' | 'sliders' | 'check' | 'lock';
+}

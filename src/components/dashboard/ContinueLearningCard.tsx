@@ -33,11 +33,11 @@ export const ContinueLearningCard: React.FC<ContinueLearningCardProps> = ({
   const getTypeIcon = () => {
     switch (currentType) {
       case 'voice':
-        return <Mic className="w-5 h-5 text-teal-600" />;
+        return <Mic className="w-5 h-5 text-teal-600 dark:text-teal-400" />;
       case 'flashcards':
-        return <Layers className="w-5 h-5 text-indigo-600" />;
+        return <Layers className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />;
       default:
-        return <BookOpen className="w-5 h-5 text-teal-600" />;
+        return <BookOpen className="w-5 h-5 text-teal-600 dark:text-teal-400" />;
     }
   };
 
@@ -55,9 +55,12 @@ export const ContinueLearningCard: React.FC<ContinueLearningCardProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-[#11222D] rounded-3xl p-5 border border-stone-200/90 dark:border-white/10 shadow-xs space-y-3.5 transition-all hover:shadow-sm">
+    <div className="bg-white dark:bg-[#11222D] dark:bg-gradient-to-br dark:from-[#11222D] dark:to-[#132735] rounded-3xl p-5 border border-stone-200/90 dark:border-white/10 shadow-xs space-y-3.5 relative overflow-hidden transition-all hover:shadow-sm">
+      {/* Subtle brand tint background in dark mode */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-teal-50/60 dark:bg-teal-500/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none" />
+
       {/* Top Header Tag & Progress */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 flex items-center justify-center font-bold border border-teal-200/60 dark:border-teal-500/30">
             {getTypeIcon()}
@@ -75,7 +78,7 @@ export const ContinueLearningCard: React.FC<ContinueLearningCardProps> = ({
       </div>
 
       {/* Main Title & Localized Subtitle */}
-      <div className="space-y-1">
+      <div className="space-y-1 relative z-10">
         <h3 className="font-display font-black text-base text-stone-900 dark:text-white leading-snug">
           {currentTitle}
         </h3>
@@ -88,13 +91,13 @@ export const ContinueLearningCard: React.FC<ContinueLearningCardProps> = ({
       </div>
 
       {/* Progress & Meta row */}
-      <div className="space-y-2 pt-1">
+      <div className="space-y-2 pt-1 relative z-10">
         <div className="flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400">
           <div className="flex items-center gap-2">
             <span className="font-medium text-stone-700 dark:text-stone-300">{currentLevel}</span>
             <span>·</span>
             <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
+              <Clock className="w-3 h-3 text-stone-400 dark:text-stone-500" />
               {currentMinutes} min
             </span>
           </div>
@@ -112,7 +115,7 @@ export const ContinueLearningCard: React.FC<ContinueLearningCardProps> = ({
       {/* Action Button */}
       <button
         onClick={handleClick}
-        className="w-full min-h-[46px] bg-stone-900 dark:bg-teal-500 hover:bg-stone-800 dark:hover:bg-teal-400 text-white dark:text-stone-950 rounded-2xl text-xs font-black py-2.5 px-4 flex items-center justify-between transition-all btn-3d-dark dark:shadow-md cursor-pointer"
+        className="w-full min-h-[46px] bg-stone-900 hover:bg-stone-800 dark:bg-teal-500 dark:hover:bg-teal-400 text-white dark:text-stone-950 rounded-2xl text-xs font-black py-2.5 px-4 flex items-center justify-between transition-all btn-3d-dark dark:btn-3d-teal shadow-xs cursor-pointer relative z-10"
       >
         <span className="font-display">Continue Activity</span>
         <div className="flex items-center gap-1 text-teal-400 dark:text-stone-950">

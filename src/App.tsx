@@ -14,6 +14,7 @@ import { AdminAuthProvider } from './components/admin/AdminAuthContext';
 import { UserProfile, Lesson, TargetDialect, Module, DayActivity } from './types';
 import { INITIAL_MODULES, DEFAULT_WEEKLY_ACTIVITY } from './data/curriculumData';
 import { ThemeProvider } from './context/ThemeContext';
+import { addNotification } from './utils/notificationService';
 
 export default function App() {
   const [appMode, setAppMode] = useState<'learner' | 'admin'>(() => {
@@ -102,6 +103,16 @@ export default function App() {
 
   // Handle lesson completion
   const handleCompleteLesson = (lessonId: string, earnedXp: number, score: number) => {
+    addNotification({
+      category: 'achievement',
+      title: `🎓 Leksyon Nalampos! +${earnedXp} XP`,
+      titleBisaya: 'Maayo Kaayong Pag-uswag!',
+      message: `Nalampos nimo ang leksyon nga adunay ${score}% Whisper speech concordance. Nadugangan og +15 Bahandi Gems!`,
+      actionLabel: 'Tan-awa ang Profile',
+      actionType: 'profile',
+      iconType: 'trophy',
+    });
+
     setProfile((prev) => {
       const alreadyCompleted = prev.completedLessons.includes(lessonId);
       const newCompleted = alreadyCompleted ? prev.completedLessons : [...prev.completedLessons, lessonId];
@@ -140,14 +151,60 @@ export default function App() {
 
   // Refill Hearts
   const handleRefillHearts = () => {
+    addNotification({
+      category: 'achievement',
+      title: '💖 Hearts Refilled to Full',
+      titleBisaya: 'Puno na Usab ang Kinabuhi (5/5)',
+      message: 'You have maximum hearts ready for conversational roleplays and voice drills.',
+      iconType: 'sparkles',
+    });
     setProfile((prev) => ({
       ...prev,
       hearts: 5,
     }));
   };
 
+  // Award Voice Practice & Gamification Rewards
+  const handleAwardVoiceReward = (earnedXp: number, earnedGems: number = 10, speechScore: number = 90) => {
+    setProfile((prev) => {
+      const newXp = prev.xp + earnedXp;
+      const newGems = (prev.gems || 240) + earnedGems;
+      const newTodayMins = prev.todayMinutes + 2;
+      const newAvgSpeech = Math.round((prev.speechScoreAverage * 4 + speechScore) / 5);
+
+      const updatedWeekly = (prev.weeklyActivity || DEFAULT_WEEKLY_ACTIVITY).map((d) => {
+        if (d.isToday) {
+          const m = d.minutes + 2;
+          return {
+            ...d,
+            minutes: m,
+            xpEarned: d.xpEarned + earnedXp,
+            goalMet: m >= d.goalMinutes,
+          };
+        }
+        return d;
+      });
+
+      return {
+        ...prev,
+        xp: newXp,
+        gems: newGems,
+        todayMinutes: newTodayMins,
+        speechScoreAverage: newAvgSpeech,
+        weeklyActivity: updatedWeekly,
+      };
+    });
+  };
+
   // Use Streak Freeze
   const handleUseStreakFreeze = () => {
+    addNotification({
+      category: 'achievement',
+      title: '🧊 Streak Freeze Activated',
+      titleBisaya: 'Gipanalipdan ang Imong Daily Streak',
+      message: 'Your 7-day practice streak is protected from reset today.',
+      iconType: 'flame',
+    });
     setProfile((prev) => ({
       ...prev,
       streakFreezesAvailable: Math.max(0, (prev.streakFreezesAvailable ?? 1) - 1),
@@ -208,6 +265,15 @@ export default function App() {
 
   // Update Dialect
   const handleUpdateDialect = (newDialect: TargetDialect) => {
+    addNotification({
+      category: 'admin',
+      title: `🌐 Target Dialect Set: ${newDialect === 'davao_bisaya' ? 'Davao Bisaya' : 'Standard Cebuano'}`,
+      titleBisaya: 'Giusab ang Imong Dialect',
+      message: 'Pronunciation drills, speech recognition tolerances, and cultural phrases adapted to your dialect.',
+      iconType: 'sliders',
+      actionLabel: 'Browse Lessons',
+      actionType: 'learn',
+    });
     setProfile((prev) => ({
       ...prev,
       targetDialect: newDialect,
@@ -293,6 +359,11 @@ export default function App() {
               onRefillHearts={handleRefillHearts}
               userName={profile.name}
               showHeroGreeting={currentTab === 'home'}
+              onNavigateAction={(actionType) => {
+                if (actionType === 'learn') setCurrentTab('learn');
+                else if (actionType === 'profile') setCurrentTab('profile');
+                else if (actionType === 'admin') setAppMode('admin');
+              }}
             />
 
             {/* Main Viewport Content */}
@@ -311,6 +382,7 @@ export default function App() {
             onGoToProfile={() => setCurrentTab('profile')}
             onUseStreakFreeze={handleUseStreakFreeze}
             onOpenDialectModal={() => setShowDialectModal(true)}
+            onAwardReward={handleAwardVoiceReward}
           />
         )}
 
@@ -325,6 +397,7 @@ export default function App() {
               setSultiPrefillPrompt(prompt);
               setCurrentTab('sulti');
             }}
+            onGoToProfile={() => setCurrentTab('profile')}
           />
         )}
 

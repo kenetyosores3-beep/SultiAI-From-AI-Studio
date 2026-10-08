@@ -6,6 +6,8 @@ import { UserProfile, Lesson, DayActivity, ContinueLearningActivity, SultiRecomm
 import { speakBisaya } from '../utils/audio';
 import { sounds } from '../utils/soundEffects';
 import { StreakCalendar } from './StreakCalendar';
+import { VoicePathModal } from './voice/VoicePathModal';
+import { getStoredVoiceProgress } from '../data/voiceGamificationData';
 
 // Modular Dashboard Subcomponents
 import { DailyMissionCard } from './dashboard/DailyMissionCard';
@@ -25,6 +27,7 @@ interface HomeScreenProps {
   onGoToProfile?: () => void;
   onUseStreakFreeze?: () => void;
   onOpenDialectModal?: () => void;
+  onAwardReward?: (xp: number, gems: number, speechScore: number) => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -37,10 +40,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onGoToProfile,
   onUseStreakFreeze,
   onOpenDialectModal,
+  onAwardReward,
 }) => {
   const [isPlayingExpression, setIsPlayingExpression] = useState(false);
   const [showRewardToast, setShowRewardToast] = useState<string | null>(null);
   const [showStreakModal, setShowStreakModal] = useState(false);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [voiceProgress, setVoiceProgress] = useState(getStoredVoiceProgress);
 
   // Determine time-aware greeting
   const getGreeting = () => {
@@ -119,9 +125,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* ZONE 4: QUICK PRACTICE ROW */}
       <QuickPracticeRow
-        onStartVoice={() => onOpenSulti('Gusto kong magpraktis og pagsulti sa Bisaya.')}
+        onStartVoice={() => setShowVoiceModal(true)}
         onStartVocabulary={() => onGoToLearn()}
         onStartChat={() => onOpenSulti()}
+        voiceLevel={voiceProgress.unlockedLevel}
+        voiceBadgesCount={voiceProgress.earnedBadges.length}
       />
 
       {/* ZONE 5: PROGRESS SNAPSHOT */}
@@ -152,42 +160,84 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Visual Streak Calendar Modal */}
       {showStreakModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md max-h-[92vh] overflow-y-auto bg-white dark:bg-[#11222D] rounded-3xl p-5 shadow-2xl space-y-4 border border-stone-200 dark:border-white/10 transition-colors">
-            <div className="flex items-center justify-between border-b border-stone-100 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-orange-500 fill-orange-500" />
-                <h3 className="font-display font-black text-base text-stone-900 dark:text-white">
-                  Weekly Streak & Activity Calendar
-                </h3>
+        <div 
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowStreakModal(false);
+          }}
+        >
+          <div className="w-full max-w-md max-h-[92vh] sm:max-h-[88vh] flex flex-col bg-white dark:bg-[#11222D] rounded-t-3xl sm:rounded-3xl shadow-2xl border-t sm:border border-stone-200 dark:border-white/15 overflow-hidden transition-all pb-safe">
+            {/* Mobile Drag Indicator Bar */}
+            <div className="w-12 h-1.5 bg-stone-300 dark:bg-stone-700 rounded-full mx-auto my-2 sm:hidden shrink-0" />
+
+            {/* Modal Header */}
+            <div className="px-4 py-3 border-b border-stone-200 dark:border-white/10 flex items-center justify-between bg-stone-50/90 dark:bg-[#152B37]/90 shrink-0 gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-orange-100 dark:bg-orange-950/80 text-orange-600 dark:text-orange-400 border border-orange-300 dark:border-orange-500/40 flex items-center justify-center shrink-0">
+                  <Flame className="w-4 h-4 fill-orange-500 text-orange-500" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-display font-black text-sm sm:text-base text-stone-900 dark:text-white leading-tight truncate">
+                    Streak & Activity
+                  </h3>
+                  <p className="text-[10px] sm:text-[11px] text-stone-500 dark:text-stone-400 font-medium truncate">
+                    Weekly Bisaya Practice Consistency
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => {
                   sounds.playTap();
                   setShowStreakModal(false);
                 }}
-                className="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 cursor-pointer transition-colors"
-                title="Close"
+                className="p-1.5 sm:p-2 rounded-xl hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 cursor-pointer transition-colors shrink-0"
+                title="Isira (Close)"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <StreakCalendar
-              weeklyActivity={weeklyActivity}
-              streakDays={profile.streakDays}
-              dailyGoalMinutes={profile.dailyGoalMinutes}
-              todayMinutes={profile.todayMinutes}
-              streakFreezes={profile.streakFreezesAvailable ?? 1}
-              onQuickPractice={() => {
-                setShowStreakModal(false);
-                onStartLesson(nextLesson);
-              }}
-              onUseStreakFreeze={onUseStreakFreeze}
-            />
+            {/* Modal Content Scroll Area */}
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 overscroll-contain">
+              <StreakCalendar
+                weeklyActivity={weeklyActivity}
+                streakDays={profile.streakDays}
+                dailyGoalMinutes={profile.dailyGoalMinutes}
+                todayMinutes={profile.todayMinutes}
+                streakFreezes={profile.streakFreezesAvailable ?? 1}
+                onQuickPractice={() => {
+                  setShowStreakModal(false);
+                  onStartLesson(nextLesson);
+                }}
+                onUseStreakFreeze={onUseStreakFreeze}
+                inModal
+              />
+            </div>
           </div>
         </div>
       )}
+
+      {/* Visual Voice Gamification Path Modal */}
+      <VoicePathModal
+        isOpen={showVoiceModal}
+        onClose={() => {
+          setShowVoiceModal(false);
+          setVoiceProgress(getStoredVoiceProgress());
+        }}
+        onAwardReward={(xp, gems, speechScore) => {
+          setShowRewardToast(`Voice drill passed! +${xp} XP • +${gems} Gems`);
+          setTimeout(() => setShowRewardToast(null), 3000);
+          setVoiceProgress(getStoredVoiceProgress());
+          if (onAwardReward) {
+            onAwardReward(xp, gems, speechScore);
+          }
+        }}
+        onOpenSultiChat={(prompt) => {
+          setShowVoiceModal(false);
+          onOpenSulti(prompt);
+        }}
+        targetDialect={profile.targetDialect}
+      />
 
       {/* CULTURAL EXPRESSION OF THE DAY */}
       <div className="bg-stone-50 dark:bg-[#11222D] border border-stone-200/80 dark:border-white/10 rounded-3xl p-4 space-y-2 shadow-2xs transition-colors">

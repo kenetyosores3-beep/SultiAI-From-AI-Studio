@@ -10,6 +10,7 @@ import { CAPSTONE_CHECKLIST_DATA, RESEARCH_METRICS, DEFAULT_WEEKLY_ACTIVITY } fr
 import { sounds } from '../utils/soundEffects';
 import { StreakCalendar } from './StreakCalendar';
 import { useTheme, ThemeMode } from '../context/ThemeContext';
+import { VOICE_LEVELS, getStoredVoiceProgress } from '../data/voiceGamificationData';
 
 interface ProfileScreenProps {
   profile: UserProfile;
@@ -26,6 +27,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 }) => {
   const { themeMode, setThemeMode } = useTheme();
   const [activeTab, setActiveTab] = useState<'stats' | 'achievements' | 'research' | 'settings'>('stats');
+  const [voiceProgress] = useState(getStoredVoiceProgress);
 
   // Interactive SUS (System Usability Scale) survey runner state
   const [susAnswers, setSusAnswers] = useState<number[]>([4, 1, 4, 1, 4, 1, 4, 1, 5, 1]);
@@ -261,37 +263,96 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
       {/* TAB 2: ACHIEVEMENTS GALLERY */}
       {activeTab === 'achievements' && (
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2.5">
-            {achievements.map((ach) => (
-              <div
-                key={ach.id}
-                className={`p-4 rounded-3xl border space-y-2 text-center transition-all glass-touch ${
-                  ach.unlocked
-                    ? 'bg-white dark:bg-[#11222D] border-stone-200/90 dark:border-white/10 shadow-sm'
-                    : 'bg-stone-50 dark:bg-stone-900/40 border-stone-200/60 dark:border-white/5 opacity-50'
-                }`}
-              >
-                <div className="text-3xl mx-auto">{ach.icon}</div>
-                <div className="space-y-0.5">
-                  <div className="font-display font-black text-xs text-stone-900 dark:text-white">
-                    {ach.title}
-                  </div>
-                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
-                    {ach.desc}
+        <div className="space-y-4">
+          {/* SECTION: VOICE GAMIFICATION BADGES */}
+          <div className="bg-white dark:bg-[#11222D] rounded-3xl p-4 border border-stone-200/90 dark:border-white/10 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                  <Mic className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-display font-black text-xs text-stone-900 dark:text-white">
+                    Dalang Tingog (Voice Badges)
+                  </h3>
+                  <p className="text-[10px] text-stone-500 dark:text-stone-400">
+                    5-Level Voice Gamification Path
                   </p>
                 </div>
-                {ach.unlocked ? (
-                  <span className="inline-block text-[10px] font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/70 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-500/30">
-                    Unlocked ✓
-                  </span>
-                ) : (
-                  <span className="inline-block text-[10px] font-bold text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 rounded-full">
-                    Locked
-                  </span>
-                )}
               </div>
-            ))}
+              <span className="text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-500/30">
+                {voiceProgress.earnedBadges.length} / 5 Badges
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {VOICE_LEVELS.map((level) => {
+                const isEarned = voiceProgress.earnedBadges.includes(level.badge.id);
+                return (
+                  <div
+                    key={level.badge.id}
+                    className={`p-3 rounded-2xl border flex items-center gap-2.5 transition-all ${
+                      isEarned
+                        ? 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-200/80 dark:border-amber-500/30 shadow-2xs'
+                        : 'bg-stone-50 dark:bg-stone-900/30 border-stone-200/60 dark:border-white/5 opacity-55'
+                    }`}
+                  >
+                    <div className="text-2xl shrink-0">
+                      {isEarned ? level.badge.icon : '🔒'}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-display font-black text-xs text-stone-900 dark:text-white truncate">
+                        {level.badge.nameBisaya}
+                      </div>
+                      <div className="text-[10px] text-stone-500 dark:text-stone-400 truncate">
+                        {level.badge.name} ({level.badge.tier})
+                      </div>
+                      <div className="text-[9.5px] font-mono text-amber-600 dark:text-amber-400 font-bold mt-0.5">
+                        +{level.badge.xpReward} XP • +{level.badge.gemsReward} 💎
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* GENERAL ACHIEVEMENTS */}
+          <div className="space-y-2">
+            <div className="text-xs font-display font-bold text-stone-600 dark:text-stone-400">
+              General Milestones
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              {achievements.map((ach) => (
+                <div
+                  key={ach.id}
+                  className={`p-4 rounded-3xl border space-y-2 text-center transition-all glass-touch ${
+                    ach.unlocked
+                      ? 'bg-white dark:bg-[#11222D] border-stone-200/90 dark:border-white/10 shadow-sm'
+                      : 'bg-stone-50 dark:bg-stone-900/40 border-stone-200/60 dark:border-white/5 opacity-50'
+                  }`}
+                >
+                  <div className="text-3xl mx-auto">{ach.icon}</div>
+                  <div className="space-y-0.5">
+                    <div className="font-display font-black text-xs text-stone-900 dark:text-white">
+                      {ach.title}
+                    </div>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
+                      {ach.desc}
+                    </p>
+                  </div>
+                  {ach.unlocked ? (
+                    <span className="inline-block text-[10px] font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/70 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-500/30">
+                      Unlocked ✓
+                    </span>
+                  ) : (
+                    <span className="inline-block text-[10px] font-bold text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 rounded-full">
+                      Locked
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

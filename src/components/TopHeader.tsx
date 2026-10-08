@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Flame, ShieldCheck, Gem, Volume2, Globe, ChevronRight, 
-  Award, Sun, Moon, Sparkles, Sliders 
+  Award, Sun, Moon, Sparkles, Sliders, Bell 
 } from 'lucide-react';
-import { TargetDialect } from '../types';
+import { TargetDialect, NotificationCategory } from '../types';
 import { sounds } from '../utils/soundEffects';
 import { speakBisaya } from '../utils/audio';
 import { ASSETS } from '../assets/images';
 import { useTheme } from '../context/ThemeContext';
+import { 
+  getStoredNotifications, 
+  markNotificationAsRead, 
+  markAllNotificationsAsRead, 
+  deleteNotification, 
+  clearAllNotifications, 
+  resetToDefaultNotifications, 
+  addNotification, 
+  subscribeNotifications 
+} from '../utils/notificationService';
+import { NotificationModal } from './NotificationModal';
 
 interface TopHeaderProps {
   streak: number;
@@ -21,6 +32,7 @@ interface TopHeaderProps {
   onRefillHearts?: () => void;
   userName?: string;
   showHeroGreeting?: boolean;
+  onNavigateAction?: (actionType?: string) => void;
 }
 
 export const TopHeader: React.FC<TopHeaderProps> = ({
@@ -34,9 +46,21 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   onOpenAdminApp,
   userName = 'Genesis',
   showHeroGreeting = true,
+  onNavigateAction,
 }) => {
   const { themeMode, setThemeMode, isDark, toggleTheme } = useTheme();
   const [isPlayingGreeting, setIsPlayingGreeting] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState(getStoredNotifications);
+
+  useEffect(() => {
+    const unsubscribe = subscribeNotifications((updated) => {
+      setNotifications([...updated]);
+    });
+    return unsubscribe;
+  }, []);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   // Time-aware Bisaya greeting
   const getGreeting = () => {
@@ -60,52 +84,86 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
     setIsPlayingGreeting(false);
   };
 
+  const handleAddTestNotification = (category: NotificationCategory) => {
+    if (category === 'achievement') {
+      addNotification({
+        category: 'achievement',
+        title: '🎉 New Achievement: Quick Practice Master',
+        titleBisaya: 'Nakuha ang Pasidungog sa Pagsulti!',
+        message: 'Completed a rapid Bisaya conversation drill with 95% pronunciation clarity. +40 XP earned!',
+        iconType: 'trophy',
+        actionLabel: 'View Progress',
+        actionType: 'profile',
+      });
+    } else if (category === 'admin') {
+      addNotification({
+        category: 'admin',
+        title: '📢 Admin Notice: Mindanao Lexicon Updated',
+        titleBisaya: 'Bag-ong Bokabularyo gikan sa Admin',
+        message: 'New regional idioms from Davao and Bukidnon are now active in the phrasebook and Sulti AI prompts.',
+        iconType: 'sliders',
+        actionLabel: 'Learn Phrases',
+        actionType: 'learn',
+      });
+    } else {
+      addNotification({
+        category: 'security',
+        title: '🛡️ Security Check: Cloud Session Verified',
+        titleBisaya: 'Gipamatud-an ang Session Security',
+        message: 'Supabase TLS 1.3 handshake verified. Audio recording buffers safely cleaned from memory.',
+        iconType: 'shield',
+        actionLabel: 'View Audit',
+        actionType: 'audit',
+      });
+    }
+  };
+
   return (
-    <header className="w-full text-stone-950 dark:text-white transition-colors">
-      <div className="w-full max-w-md mx-auto px-3 sm:px-4 pt-1 pb-2 space-y-3">
-        {/* ROW 1: BRAND ANCHOR & SINGLE UNIFIED STATUS BAR ROW (STICKY TOP APP BAR) */}
-        <div className="sticky top-0 z-40 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2 sm:py-2.5 bg-white/95 dark:bg-[#11222D]/95 backdrop-blur-md border-b border-stone-300 dark:border-white/15 shadow-2xs flex flex-wrap items-center justify-between gap-1.5 w-[calc(100%+1.5rem)] sm:w-[calc(100%+2rem)] transition-colors">
+    <>
+      {/* ROW 1: DEDICATED STICKY TOP APP BAR (Full-width, clean containment, zero overlap) */}
+      <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-[#11222D]/95 backdrop-blur-md border-b border-stone-200 dark:border-white/15 shadow-xs transition-colors">
+        <div className="w-full max-w-md mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-1.5">
           {/* SultiAI Logo & Mascot Brand Anchor */}
           <div 
             onClick={() => {
               sounds.playTap();
               onOpenAuditModal();
             }}
-            className="flex items-center gap-2 cursor-pointer group active:scale-98 transition-transform select-none min-w-0 shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2 cursor-pointer group active:scale-98 transition-transform select-none min-w-0 shrink-0"
             title="SultiAI Language Companion · Tap for Project Blueprint"
           >
             <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-teal-600 dark:border-teal-400 bg-teal-50 dark:bg-stone-800 shadow-2xs flex items-center justify-center group-hover:border-teal-500 transition-colors">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border-2 border-teal-600 dark:border-teal-400 bg-teal-50 dark:bg-stone-800 shadow-2xs flex items-center justify-center group-hover:border-teal-500 transition-colors">
                 <img
                   src={ASSETS.tutorMascot}
                   alt="SultiAI Mascot"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#11222D] shadow-xs" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#11222D] shadow-xs" />
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="font-display text-base font-black tracking-tight text-stone-950 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-none">
+              <span className="font-display text-xs sm:text-base font-black tracking-tight text-stone-950 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors leading-none">
                 Sulti<span className="text-teal-600 dark:text-teal-400">AI</span>
               </span>
-              <span className="text-[9px] font-mono font-extrabold uppercase tracking-wider text-stone-700 dark:text-stone-300 mt-0.5 leading-none truncate max-w-[100px] sm:max-w-none">
-                Bisaya Companion
+              <span className="text-[8px] sm:text-[8.5px] font-mono font-extrabold uppercase tracking-wider text-stone-600 dark:text-stone-300 mt-0.5 leading-none truncate hidden min-[360px]:inline">
+                Bisaya
               </span>
             </div>
           </div>
 
-          {/* SINGLE UNIFIED STATUS BAR ROW (Streak, Bahandi Gems/XP, Theme Switcher, Security Action) */}
-          <div className="flex items-center gap-1 shrink-0 bg-stone-100 dark:bg-stone-800/90 p-0.5 rounded-full border border-stone-300 dark:border-white/15 shadow-inner backdrop-blur-md">
+          {/* SINGLE UNIFIED STATUS BAR ROW (Streak, Bahandi Gems/XP, Notifications, Theme, Security) */}
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0 bg-stone-100 dark:bg-stone-800/90 p-0.5 rounded-full border border-stone-300 dark:border-white/15 shadow-inner backdrop-blur-md">
             {/* Fire Streak Pill - High Contrast */}
             <button
               onClick={() => {
                 sounds.playTap();
                 onOpenAuditModal();
               }}
-              className="h-7 px-2 sm:px-2.5 flex items-center gap-1 rounded-full bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/80 dark:hover:bg-amber-900/80 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-500/40 active:scale-95 transition-all cursor-pointer font-mono text-xs font-black shadow-2xs"
+              className="h-6.5 sm:h-7 px-1.5 sm:px-2.5 flex items-center gap-0.5 sm:gap-1 rounded-full bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/80 dark:hover:bg-amber-900/80 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-500/40 active:scale-95 transition-all cursor-pointer font-mono text-[10.5px] sm:text-xs font-black shadow-2xs shrink-0"
               title={`${streak}-day streak! Keep up your daily Bisaya practice.`}
             >
-              <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-600 dark:text-amber-400 shrink-0" />
+              <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-500 text-amber-600 dark:text-amber-400 shrink-0" />
               <span className="tabular-nums font-black">{streak}</span>
             </button>
 
@@ -115,11 +173,28 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                 sounds.playTap();
                 onOpenAuditModal();
               }}
-              className="h-7 px-2 sm:px-2.5 flex items-center gap-1 rounded-full bg-teal-100 hover:bg-teal-200 dark:bg-teal-950/80 dark:hover:bg-teal-900/80 text-teal-950 dark:text-teal-200 border border-teal-300 dark:border-teal-500/40 active:scale-95 transition-all cursor-pointer font-mono text-xs font-black shadow-2xs"
+              className="h-6.5 sm:h-7 px-1.5 sm:px-2.5 flex items-center gap-0.5 sm:gap-1 rounded-full bg-teal-100 hover:bg-teal-200 dark:bg-teal-950/80 dark:hover:bg-teal-900/80 text-teal-950 dark:text-teal-200 border border-teal-300 dark:border-teal-500/40 active:scale-95 transition-all cursor-pointer font-mono text-[10.5px] sm:text-xs font-black shadow-2xs shrink-0"
               title={`${gems} Bahandi Gems (XP: ${xp})`}
             >
-              <Gem className="w-3.5 h-3.5 fill-teal-600/30 text-teal-700 dark:text-teal-300 shrink-0" />
+              <Gem className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-teal-600/30 text-teal-700 dark:text-teal-300 shrink-0" />
               <span className="tabular-nums font-black">{gems}</span>
+            </button>
+
+            {/* Notification Center Bell Action with Unread Badge */}
+            <button
+              onClick={() => {
+                sounds.playTap();
+                setShowNotifications(true);
+              }}
+              className="relative w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full bg-white dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 text-stone-900 dark:text-stone-100 hover:text-teal-600 dark:hover:text-teal-300 border border-stone-300 dark:border-white/15 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
+              title={`Pahibalo & Real-time Notifications (${unreadCount} unread). Tap to open.`}
+            >
+              <Bell className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[13px] h-[13px] px-0.5 rounded-full bg-rose-500 border-2 border-white dark:border-[#11222D] text-white text-[7.5px] font-black font-mono flex items-center justify-center shadow-xs animate-pulse">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {/* Quick Theme Switcher Button (☀️ Light / 🌙 Dark) */}
@@ -128,13 +203,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                 sounds.playTap();
                 toggleTheme();
               }}
-              className="w-7 h-7 rounded-full bg-white dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 text-stone-900 dark:text-amber-300 border border-stone-300 dark:border-white/15 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
+              className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full bg-white dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 text-stone-900 dark:text-amber-300 border border-stone-300 dark:border-white/15 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
               title={`Currently in ${isDark ? 'Dark' : 'Light'} Mode. Tap to toggle.`}
             >
               {isDark ? (
-                <Sun className="w-3.5 h-3.5 text-amber-400" />
+                <Sun className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />
               ) : (
-                <Moon className="w-3.5 h-3.5 text-stone-800" />
+                <Moon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-stone-800" />
               )}
             </button>
 
@@ -144,10 +219,10 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                 sounds.playTap();
                 onOpenAuditModal();
               }}
-              className="w-7 h-7 rounded-full bg-white dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 text-teal-700 dark:text-teal-300 border border-stone-300 dark:border-white/15 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
+              className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full bg-white dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 text-teal-700 dark:text-teal-300 border border-stone-300 dark:border-white/15 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
               title="SultiAI Research Blueprint & Supabase Security Audit"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+              <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-teal-700 dark:text-teal-400" />
             </button>
 
             {/* Admin Web Dashboard Action */}
@@ -157,31 +232,33 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                   sounds.playTap();
                   onOpenAdminApp();
                 }}
-                className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
+                className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
                 title="Open Admin Dashboard & Audit Control Center"
               >
-                <Sliders className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                <Sliders className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-600 dark:text-indigo-400" />
               </button>
             )}
           </div>
         </div>
+      </header>
 
-        {/* ROW 2: UNIFIED HERO GREETING & INTEGRATED LEARNER STATUS SECTION */}
-        {showHeroGreeting && (
-          <div className="relative rounded-2xl sm:rounded-3xl p-4 sm:p-4.5 bg-white dark:bg-[#132532] border border-stone-300 dark:border-white/15 shadow-sm overflow-hidden transition-all animate-in fade-in slide-in-from-top-1 duration-300">
+      {/* ROW 2: UNIFIED HERO GREETING & INTEGRATED LEARNER STATUS SECTION */}
+      {showHeroGreeting && (
+        <div className="w-full max-w-md mx-auto px-3 sm:px-4 pt-3 pb-1">
+          <div className="relative rounded-2xl sm:rounded-3xl p-3.5 sm:p-4.5 bg-white dark:bg-[#132532] border border-stone-200 dark:border-white/15 shadow-sm overflow-hidden transition-all animate-in fade-in slide-in-from-top-1 duration-300">
             {/* Subtle background ambient warmth */}
             <div className="absolute top-0 right-0 w-36 h-36 bg-teal-500/5 dark:bg-teal-500/10 rounded-full blur-2xl pointer-events-none" />
 
             {/* Main Greeting Row: Typography + Audio Pronunciation button */}
-            <div className="flex items-start justify-between gap-3 relative z-10">
-              <div className="space-y-1.5 min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2.5 relative z-10">
+              <div className="space-y-1 min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-teal-600 dark:bg-teal-400 animate-pulse" />
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-black uppercase tracking-wider bg-teal-50 dark:bg-teal-950/80 text-teal-900 dark:text-teal-200 border border-teal-200 dark:border-teal-800">
+                  <span className="w-2 h-2 rounded-full bg-teal-600 dark:bg-teal-400 animate-pulse shrink-0" />
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[9.5px] font-mono font-black uppercase tracking-wider bg-teal-50 dark:bg-teal-950/80 text-teal-900 dark:text-teal-200 border border-teal-200 dark:border-teal-800 shrink-0">
                     Bisaya Journey
                   </span>
                 </div>
-                <h1 className="font-display font-black text-xl sm:text-2xl text-stone-950 dark:text-white tracking-tight leading-snug">
+                <h1 className="font-display font-black text-lg sm:text-xl text-stone-950 dark:text-white tracking-tight leading-snug break-words">
                   {greeting.bisaya}
                 </h1>
                 <p className="text-xs sm:text-[13px] text-stone-750 dark:text-stone-200 font-medium leading-relaxed">
@@ -191,7 +268,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
 
               <button
                 onClick={handlePlayAudio}
-                className="p-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 hover:text-teal-700 dark:hover:text-teal-300 border border-stone-300 dark:border-stone-700 shadow-2xs active:scale-95 transition-all cursor-pointer shrink-0 mt-0.5"
+                className="p-2 sm:p-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 hover:text-teal-700 dark:hover:text-teal-300 border border-stone-300 dark:border-stone-700 shadow-2xs active:scale-95 transition-all cursor-pointer shrink-0 mt-0.5"
                 title="Paminawa ang Bisaya nga pagtimbaya (Listen to native pronunciation)"
               >
                 <Volume2 className={`w-4 h-4 ${isPlayingGreeting ? 'animate-pulse text-teal-600 dark:text-teal-400' : ''}`} />
@@ -199,7 +276,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             </div>
 
             {/* INTEGRATED SECONDARY LEARNER STATUS ROW (Target Dialect & Level 3) */}
-            <div className="mt-3.5 pt-3 border-t border-stone-200 dark:border-white/15 flex flex-wrap items-center justify-between gap-2 relative z-10">
+            <div className="mt-3 pt-2.5 border-t border-stone-200 dark:border-white/15 flex flex-wrap items-center justify-between gap-2 relative z-10">
               {/* Target Dialect Area */}
               <button
                 onClick={() => {
@@ -209,16 +286,16 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
                 className="flex items-center gap-2 text-left group cursor-pointer active:scale-[0.98] transition-transform min-w-0"
                 title="Switch target dialect (Davao Bisaya, Standard Cebuano, Hiligaynon)"
               >
-                <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-950 border border-teal-300 dark:border-teal-500/40 text-teal-900 dark:text-teal-200 flex items-center justify-center shrink-0 group-hover:bg-teal-200 dark:group-hover:bg-teal-900 transition-colors">
-                  <Globe className="w-4 h-4 text-teal-800 dark:text-teal-300" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-teal-100 dark:bg-teal-950 border border-teal-300 dark:border-teal-500/40 text-teal-900 dark:text-teal-200 flex items-center justify-center shrink-0 group-hover:bg-teal-200 dark:group-hover:bg-teal-900 transition-colors">
+                  <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-800 dark:text-teal-300" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[10px] font-mono font-black tracking-wider uppercase text-teal-950 dark:text-teal-300 leading-none">
+                  <div className="text-[9.5px] font-mono font-black tracking-wider uppercase text-teal-950 dark:text-teal-300 leading-none">
                     TARGET DIALECT
                   </div>
                   <div className="flex items-center gap-1 mt-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                    <span className="text-xs sm:text-sm font-black text-stone-950 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors truncate">
+                    <span className="text-xs sm:text-sm font-black text-stone-950 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors truncate max-w-[120px] sm:max-w-none">
                       {dialect === 'davao_bisaya' ? 'Davao Bisaya' : 'Standard Cebuano'}
                     </span>
                     <ChevronRight className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
@@ -228,20 +305,43 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
 
               {/* Level Status Area */}
               <div className="text-right shrink-0">
-                <div className="text-[10px] font-mono font-black tracking-wider uppercase text-stone-700 dark:text-stone-300 leading-none">
+                <div className="text-[9.5px] font-mono font-black tracking-wider uppercase text-stone-700 dark:text-stone-300 leading-none">
                   LEVEL
                 </div>
                 <div className="flex items-center justify-end gap-1 mt-0.5">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-950 dark:text-white text-xs font-black font-mono shadow-2xs">
-                    <Award className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-950 dark:text-white text-[11px] sm:text-xs font-black font-mono shadow-2xs">
+                    <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-500 shrink-0" />
                     <span>Level 3</span>
                   </span>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
-    </header>
+        </div>
+      )}
+      {/* Notification Center Modal */}
+      <NotificationModal
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        notifications={notifications}
+        onMarkAsRead={markNotificationAsRead}
+        onMarkAllAsRead={markAllNotificationsAsRead}
+        onDeleteNotification={deleteNotification}
+        onClearAll={clearAllNotifications}
+        onResetDefaults={resetToDefaultNotifications}
+        onAddTestNotification={handleAddTestNotification}
+        onNavigateAction={(actionType) => {
+          if (actionType === 'audit') {
+            onOpenAuditModal();
+          } else if (actionType === 'admin') {
+            onOpenAdminApp?.();
+          } else if (actionType === 'dialect') {
+            onOpenDialectModal();
+          } else if (onNavigateAction) {
+            onNavigateAction(actionType);
+          }
+        }}
+      />
+    </>
   );
 };
