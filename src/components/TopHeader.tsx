@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Flame, ShieldCheck, Gem, Volume2, Globe, ChevronRight, 
-  Award, Sun, Moon, Sparkles 
+  Award, Sun, Moon, Sparkles, Sliders 
 } from 'lucide-react';
 import { TargetDialect } from '../types';
 import { sounds } from '../utils/soundEffects';
@@ -17,6 +17,7 @@ interface TopHeaderProps {
   dialect: TargetDialect;
   onOpenDialectModal: () => void;
   onOpenAuditModal: () => void;
+  onOpenAdminApp?: () => void;
   onRefillHearts?: () => void;
   userName?: string;
   showHeroGreeting?: boolean;
@@ -30,6 +31,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   dialect,
   onOpenDialectModal,
   onOpenAuditModal,
+  onOpenAdminApp,
   userName = 'Genesis',
   showHeroGreeting = true,
 }) => {
@@ -147,6 +149,20 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             >
               <ShieldCheck className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
             </button>
+
+            {/* Admin Web Dashboard Action */}
+            {onOpenAdminApp && (
+              <button
+                onClick={() => {
+                  sounds.playTap();
+                  onOpenAdminApp();
+                }}
+                className="w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-2xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0"
+                title="Open Admin Dashboard & Audit Control Center"
+              >
+                <Sliders className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              </button>
+            )}
           </div>
         </div>
 

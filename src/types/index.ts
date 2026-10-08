@@ -204,3 +204,58 @@ export interface ResearchMetricData {
   bertIntentAccuracy: number; // %
   sampleSize: number;
 }
+
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string;
+  eventType: string;
+  category: 'AI_INFERENCE' | 'SPEECH_WER' | 'LEARNING_ACTIVITY' | 'SECURITY_RLS' | 'SYSTEM_CONFIG';
+  actor: string;
+  actorRole: string;
+  description: string;
+  severity: 'INFO' | 'SUCCESS' | 'WARNING' | 'CRITICAL';
+  latencyMs?: number;
+  metadata?: Record<string, any>;
+}
+
+export interface SystemConfig {
+  activeGeminiModel: string;
+  whisperWerThreshold: number;
+  bertConfidenceThreshold: number;
+  maintenanceMode: boolean;
+  rateLimitPerMin: number;
+  groundingMapsEnabled: boolean;
+  groundingSearchEnabled: boolean;
+}
+
+export interface AdminLearner {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  targetDialect: string;
+  xp: number;
+  streakDays: number;
+  hearts: number;
+  todayMinutes: number;
+  dailyGoalMinutes: number;
+  speechScoreAverage: number;
+  vocabularyMastered: number;
+  status: string;
+  lastActive: string;
+}
+
+export interface SystemStats {
+  activeLearnersCount: number;
+  totalPracticeMinutes: number;
+  totalPracticeHours: number;
+  whisperAvgWer: number;
+  bertIntentAccuracy: number;
+  susUsabilityScore: number;
+  sampleSize: number;
+  aiRequestsToday: number;
+  geminiStatus: string;
+  supabaseRlsStatus: string;
+  serverUptimeSeconds: number;
+  memoryUsageMb: number;
+}
